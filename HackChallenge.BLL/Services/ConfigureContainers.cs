@@ -17,6 +17,7 @@ namespace HackChallenge.BLL.Services
             builder.RegisterType<ApplicationContext>();
             builder.RegisterType<UserRepository>().As<IUserAccessRepository>();
             builder.RegisterType<StartCommand>().As<IStartCommand>();
+            builder.RegisterType<EnterSignInDataCommand>().As<IEnterSignInDataCommand>();
             builder.RegisterType<Bot>();
 
             IContainer container = builder.Build();

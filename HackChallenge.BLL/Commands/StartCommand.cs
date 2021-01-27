@@ -46,15 +46,15 @@ namespace HackChallenge.BLL.Commands
             if(!isExist)
             {
                 await _userAccessRepository.AddAsync(user);
-                await client.SendTextMessageAsync(chatId, "Спасибо за регистрацию! Теперь мы можем начать.");
+                await client.SendTextMessageAsync(chatId, "Спасибо за регистрацию! Теперь мы можем начать ✅");
                 await client.SendTextMessageAsync(chatId, "Процесс подготовки...");
                 await client.SendTextMessageAsync(chatId, "Ещё немного...");
-                await client.SendTextMessageAsync(chatId, "Введите логин и пароль в формате login:password");
+                await client.SendTextMessageAsync(chatId, "Введите логин и пароль в формате login:password 🌐");
 
                 return true;
             }
 
-            await client.SendTextMessageAsync(chatId, "Вы уже зарегестрированы!");
+            await client.SendTextMessageAsync(chatId, "Вы уже зарегестрированы! ✅");
             return false;
         }
 
