@@ -9,11 +9,12 @@ namespace HackChallenge.DAL.DB
         public virtual DbSet<LinuxSystem> LinuxSystems { get; set; }
         public virtual DbSet<Directory> Directories { get; set; }
         public virtual DbSet<File> Files { get; set; }
+        public virtual DbSet<Wifi> Wifis { get; set; }
+        public virtual DbSet<Modem> Modems { get; set; }
 
 
         public ApplicationContext()
         {
-            Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

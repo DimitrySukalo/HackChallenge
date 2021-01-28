@@ -89,6 +89,48 @@ namespace HackChallenge.BLL.Commands
                 },
             };
 
+            Modem modem = new Modem()
+            {
+                IPAddress = GetRandomIp(),
+                Login = Guid.NewGuid().ToString(),
+                Password = Guid.NewGuid().ToString(),
+                Wifis = new List<Wifi>()
+                {
+                    new Wifi()
+                    {
+                        BSSID = GetRandomBSSID(),
+                        Name = "Home",
+                        Password = Guid.NewGuid().ToString(),
+                        QualityOfSignal = QualityOfSignal.Good,
+                        Speed = new Random().Next(10, 100)
+                    },
+                    new Wifi()
+                    {
+                        BSSID = GetRandomBSSID(),
+                        Name = "Lan1979",
+                        Password = Guid.NewGuid().ToString(),
+                        QualityOfSignal = QualityOfSignal.Normal,
+                        Speed = new Random().Next(10, 100)
+                    },
+                    new Wifi()
+                    {
+                        BSSID = GetRandomBSSID(),
+                        Name = "TP_Link-003245",
+                        Password = Guid.NewGuid().ToString(),
+                        QualityOfSignal = QualityOfSignal.Bad,
+                        Speed = new Random().Next(10, 100)
+                    },
+                    new Wifi()
+                    {
+                        BSSID = GetRandomBSSID(),
+                        Name = "Modem-13435",
+                        Password = Guid.NewGuid().ToString(),
+                        QualityOfSignal = QualityOfSignal.Good,
+                        Speed = new Random().Next(10, 100)
+                    }
+                }
+            };
+
             User user = new User()
             {
                 ChatId = chatId,
@@ -98,7 +140,9 @@ namespace HackChallenge.BLL.Commands
                 HaveLinuxPermission = false,
                 LinuxSystem = new LinuxSystem()
                 {
-                    Directories = directories
+                    Directories = directories,
+                    Modem = modem,
+                    IsConnectedTheInternet = false
                 }
             };
 
@@ -118,6 +162,18 @@ namespace HackChallenge.BLL.Commands
 
             await client.SendTextMessageAsync(chatId, "Вы уже зарегестрированы! ✅");
             return false;
+        }
+
+        private string GetRandomIp()
+        {
+            Random rnd = new Random();
+            return $"{rnd.Next(0, 255)}.{rnd.Next(0, 255)}.{rnd.Next(0, 255)}.{rnd.Next(0, 255)}";
+        }
+
+        private string GetRandomBSSID()
+        {
+            Random rnd = new Random();
+            return $"{rnd.Next(10,99)}:{rnd.Next(10, 99)}:{rnd.Next(0,9)}D:{rnd.Next(0, 9)}F:{rnd.Next(10, 99)}:{rnd.Next(0, 9)}E";
         }
 
         public bool IsContains(Message message)

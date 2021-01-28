@@ -10,7 +10,8 @@ namespace HackChallenge.DAL.Entities
         [ForeignKey("User")]
         public int Id { get; set; }
         public User User { get; set; }
-
+        public bool IsConnectedTheInternet { get; set; }
+        public Modem Modem { get; set; }
         public IEnumerable<Directory> Directories { get; set; }
     }
 }
