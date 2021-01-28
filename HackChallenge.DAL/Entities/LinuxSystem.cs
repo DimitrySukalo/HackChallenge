@@ -11,7 +11,10 @@ namespace HackChallenge.DAL.Entities
         public int Id { get; set; }
         public User User { get; set; }
         public bool IsConnectedTheInternet { get; set; }
-        public Modem Modem { get; set; }
+
+        [ForeignKey("WifiModule")]
+        public int WifiModuleId { get; set; }
+        public WifiModule WifiModule { get; set; }
         public IEnumerable<Directory> Directories { get; set; }
     }
 }

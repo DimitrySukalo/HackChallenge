@@ -4,14 +4,16 @@ using HackChallenge.DAL.DB;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HackChallenge.DAL.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20210128174249_AddedWifiModule")]
+    partial class AddedWifiModule
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -84,15 +86,35 @@ namespace HackChallenge.DAL.Migrations
                     b.Property<bool>("IsConnectedTheInternet")
                         .HasColumnType("bit");
 
-                    b.Property<int>("WifiModuleId")
+                    b.Property<int?>("ModemId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("WifiModuleId")
-                        .IsUnique();
+                    b.HasIndex("ModemId");
 
                     b.ToTable("LinuxSystems");
+                });
+
+            modelBuilder.Entity("HackChallenge.DAL.Entities.Modem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<string>("IPAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Login")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Modems");
                 });
 
             modelBuilder.Entity("HackChallenge.DAL.Entities.User", b =>
@@ -141,6 +163,9 @@ namespace HackChallenge.DAL.Migrations
                     b.Property<string>("BSSID")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("ModemId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -158,6 +183,8 @@ namespace HackChallenge.DAL.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ModemId");
+
                     b.HasIndex("WifiModuleId");
 
                     b.ToTable("Wifis");
@@ -170,6 +197,9 @@ namespace HackChallenge.DAL.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
+                    b.Property<int?>("LinuxSystemId")
+                        .HasColumnType("int");
+
                     b.Property<int>("ModuleMode")
                         .HasColumnType("int");
 
@@ -177,6 +207,8 @@ namespace HackChallenge.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LinuxSystemId");
 
                     b.ToTable("WifiModules");
                 });
@@ -211,22 +243,35 @@ namespace HackChallenge.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HackChallenge.DAL.Entities.WifiModule", "WifiModule")
-                        .WithOne("LinuxSystem")
-                        .HasForeignKey("HackChallenge.DAL.Entities.LinuxSystem", "WifiModuleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("HackChallenge.DAL.Entities.Modem", "Modem")
+                        .WithMany("LinuxSystems")
+                        .HasForeignKey("ModemId");
+
+                    b.Navigation("Modem");
 
                     b.Navigation("User");
-
-                    b.Navigation("WifiModule");
                 });
 
             modelBuilder.Entity("HackChallenge.DAL.Entities.Wifi", b =>
                 {
+                    b.HasOne("HackChallenge.DAL.Entities.Modem", "Modem")
+                        .WithMany("Wifis")
+                        .HasForeignKey("ModemId");
+
                     b.HasOne("HackChallenge.DAL.Entities.WifiModule", null)
                         .WithMany("Wifis")
                         .HasForeignKey("WifiModuleId");
+
+                    b.Navigation("Modem");
+                });
+
+            modelBuilder.Entity("HackChallenge.DAL.Entities.WifiModule", b =>
+                {
+                    b.HasOne("HackChallenge.DAL.Entities.LinuxSystem", "LinuxSystem")
+                        .WithMany("WifiModules")
+                        .HasForeignKey("LinuxSystemId");
+
+                    b.Navigation("LinuxSystem");
                 });
 
             modelBuilder.Entity("HackChallenge.DAL.Entities.Directory", b =>
@@ -239,6 +284,15 @@ namespace HackChallenge.DAL.Migrations
             modelBuilder.Entity("HackChallenge.DAL.Entities.LinuxSystem", b =>
                 {
                     b.Navigation("Directories");
+
+                    b.Navigation("WifiModules");
+                });
+
+            modelBuilder.Entity("HackChallenge.DAL.Entities.Modem", b =>
+                {
+                    b.Navigation("LinuxSystems");
+
+                    b.Navigation("Wifis");
                 });
 
             modelBuilder.Entity("HackChallenge.DAL.Entities.User", b =>
@@ -248,8 +302,6 @@ namespace HackChallenge.DAL.Migrations
 
             modelBuilder.Entity("HackChallenge.DAL.Entities.WifiModule", b =>
                 {
-                    b.Navigation("LinuxSystem");
-
                     b.Navigation("Wifis");
                 });
 #pragma warning restore 612, 618

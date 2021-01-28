@@ -39,7 +39,7 @@ namespace HackChallenge.DAL.Repositories
         public async Task<User> GetByIdAsync(int id)
         {
             User user = await _db.Users.Include(u=>u.LinuxSystem)
-                                       .ThenInclude(s => s.Modem).ThenInclude(m => m.Wifis)
+                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.WifiModule).ThenInclude(m => m.Wifis)
                                        .Include(u => u.LinuxSystem)
                                        .ThenInclude(s => s.Directories)
                                        .ThenInclude(d => d.Files).FirstOrDefaultAsync(u => u.Id == id);
@@ -49,7 +49,7 @@ namespace HackChallenge.DAL.Repositories
         public async Task<User> GetUserByChatId(long chatId)
         {
             User user = await _db.Users.Include(u => u.LinuxSystem)
-                                       .ThenInclude(s => s.Modem).ThenInclude(m => m.Wifis)
+                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.WifiModule).ThenInclude(m => m.Wifis)
                                        .Include(u => u.LinuxSystem)
                                        .ThenInclude(s => s.Directories)
                                        .ThenInclude(d => d.Files).FirstOrDefaultAsync(u => u.ChatId == chatId);

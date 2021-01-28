@@ -20,6 +20,7 @@ namespace HackChallenge.BLL.Services
             builder.RegisterType<EnterSignInDataCommand>().As<IEnterSignInDataCommand>();
             builder.RegisterType<ShowDirsCommand>().As<IShowDirsCommand>();
             builder.RegisterType<PingCommand>().As<IPingCommand>();
+            builder.RegisterType<IfConfigCommand>().As<IIfConfingCommand>();
             builder.RegisterType<Bot>();
 
             IContainer container = builder.Build();

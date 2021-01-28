@@ -90,48 +90,6 @@ namespace HackChallenge.BLL.Commands
                 },
             };
 
-            Modem modem = new Modem()
-            {
-                IPAddress = GetRandomIp(),
-                Login = Guid.NewGuid().ToString(),
-                Password = Guid.NewGuid().ToString(),
-                Wifis = new List<Wifi>()
-                {
-                    new Wifi()
-                    {
-                        BSSID = GetRandomBSSID(),
-                        Name = "Home",
-                        Password = Guid.NewGuid().ToString(),
-                        QualityOfSignal = QualityOfSignal.Good,
-                        Speed = new Random().Next(10, 100)
-                    },
-                    new Wifi()
-                    {
-                        BSSID = GetRandomBSSID(),
-                        Name = "Lan1979",
-                        Password = Guid.NewGuid().ToString(),
-                        QualityOfSignal = QualityOfSignal.Normal,
-                        Speed = new Random().Next(10, 100)
-                    },
-                    new Wifi()
-                    {
-                        BSSID = GetRandomBSSID(),
-                        Name = "TP_Link-003245",
-                        Password = Guid.NewGuid().ToString(),
-                        QualityOfSignal = QualityOfSignal.Bad,
-                        Speed = new Random().Next(10, 100)
-                    },
-                    new Wifi()
-                    {
-                        BSSID = GetRandomBSSID(),
-                        Name = "Modem-13435",
-                        Password = Guid.NewGuid().ToString(),
-                        QualityOfSignal = QualityOfSignal.Good,
-                        Speed = new Random().Next(10, 100)
-                    }
-                }
-            };
-
             User user = new User()
             {
                 ChatId = chatId,
@@ -142,8 +100,13 @@ namespace HackChallenge.BLL.Commands
                 LinuxSystem = new LinuxSystem()
                 {
                     Directories = directories,
-                    Modem = modem,
-                    IsConnectedTheInternet = false
+                    IsConnectedTheInternet = false,
+                    WifiModule = new WifiModule()
+                    {
+                        ModuleMode = ModuleMode.Managed,
+                        Name = "wlan0",
+                        Wifis = GetWifis()
+                    }
                 }
             };
 
@@ -163,6 +126,45 @@ namespace HackChallenge.BLL.Commands
 
             await client.SendTextMessageAsync(chatId, "<code>Вы уже зарегестрированы! ✅</code>", ParseMode.Html);
             return false;
+        }
+
+        private ICollection<Wifi> GetWifis()
+        {
+            return new List<Wifi>()
+            {
+                new Wifi()
+                {
+                    BSSID = GetRandomBSSID(),
+                    Name = "Home",
+                    Password = Guid.NewGuid().ToString(),
+                    QualityOfSignal = QualityOfSignal.Good,
+                    Speed = new Random().Next(10, 100)
+                },
+                new Wifi()
+                {
+                    BSSID = GetRandomBSSID(),
+                    Name = "Lan1979",
+                    Password = Guid.NewGuid().ToString(),
+                    QualityOfSignal = QualityOfSignal.Normal,
+                    Speed = new Random().Next(10, 100)
+                },
+                new Wifi()
+                {
+                    BSSID = GetRandomBSSID(),
+                    Name = "TP_Link-003245",
+                    Password = Guid.NewGuid().ToString(),
+                    QualityOfSignal = QualityOfSignal.Bad,
+                    Speed = new Random().Next(10, 100)
+                },
+                new Wifi()
+                {
+                    BSSID = GetRandomBSSID(),
+                    Name = "Modem-13435",
+                    Password = Guid.NewGuid().ToString(),
+                    QualityOfSignal = QualityOfSignal.Good,
+                    Speed = new Random().Next(10, 100)
+                }
+            };
         }
 
         private string GetRandomIp()

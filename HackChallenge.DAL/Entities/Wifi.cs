@@ -8,6 +8,5 @@
         public string Name { get; set; }
         public double Speed { get; set; }
         public QualityOfSignal QualityOfSignal { get; set; }
-        public Modem Modem { get; set; }
     }
 }

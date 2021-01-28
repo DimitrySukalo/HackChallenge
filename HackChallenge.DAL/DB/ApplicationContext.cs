@@ -10,8 +10,7 @@ namespace HackChallenge.DAL.DB
         public virtual DbSet<Directory> Directories { get; set; }
         public virtual DbSet<File> Files { get; set; }
         public virtual DbSet<Wifi> Wifis { get; set; }
-        public virtual DbSet<Modem> Modems { get; set; }
-
+        public virtual DbSet<WifiModule> WifiModules { get; set; }
 
         public ApplicationContext()
         {
