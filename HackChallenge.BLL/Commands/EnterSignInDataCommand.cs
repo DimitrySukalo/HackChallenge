@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.InputFiles;
 using User = HackChallenge.DAL.Entities.User;
 
@@ -41,8 +42,8 @@ namespace HackChallenge.BLL.Commands
                     user.isAuthorized = true;
                     await _userAccessRepository.SaveChangesAsync();
 
-                    await client.SendTextMessageAsync(chatId, "Поздравляем, с успешным входом в систему! Вы не так просты как нам казалось👨🏼‍💻! \nЧто ж, я вижу вы знаете что такое шифрование и надеемся помните самый простой метод =) \n" +
-                                                              "0J/RgNC40LLQtdGC0YHRgtCy0YPQtdC8INCyINGB0LjRgdGC0LXQvNC1IExpbnV4ISDQndC+INGDINCy0LDRgSDQv9GA0L7QsdC70LXQvNGLINGBINC40L3RgtC10YDQvdC10YLQvtC8Li4u");
+                    await client.SendTextMessageAsync(chatId, "<b>Поздравляем, с успешным входом в систему!</b>\n Вы не так просты как нам казалось👨🏼‍💻! \nЧто ж, я вижу вы знаете что такое шифрование и надеемся помните самый простой метод. Вот вам от нас сообщение \n" +
+                                                              "0J/RgNC40LLQtdGC0YHRgtCy0YPQtdC8INCyINGB0LjRgdGC0LXQvNC1IExpbnV4ISDQndC+INGDINCy0LDRgSDQv9GA0L7QsdC70LXQvNGLINGBINC40L3RgtC10YDQvdC10YLQvtC8Li4u",ParseMode.Html);
                     return true;
                 }
                 else if(signInData[0] == "Uzdzkip" && signInData[1] != "Bw&+2u" && !user.isAuthorized)
@@ -67,7 +68,7 @@ namespace HackChallenge.BLL.Commands
 
                     if(user.CountOfIncorrectLoginData == 1)
                     {
-                        await client.SendTextMessageAsync(chatId, "Клавдий Цезарь может сказать тебе твоё имя, но ты должен вспомнить имя человека создавшего этот проект и сколько ему лет 🔑");
+                        await client.SendTextMessageAsync(chatId, "<b>Клавдий Цезарь</b> может сказать тебе твоё имя, но ты должен вспомнить <b>имя</b> человека создавшего этот проект и сколько ему <b>лет</b> 🔑", ParseMode.Html);
                     }
 
                     return false;

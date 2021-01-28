@@ -6,9 +6,14 @@ namespace HackChallenge.DAL.DB
     public class ApplicationContext : DbContext
     {
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<LinuxSystem> LinuxSystems { get; set; }
+        public virtual DbSet<Directory> Directories { get; set; }
+        public virtual DbSet<File> Files { get; set; }
+
 
         public ApplicationContext()
         {
+            Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

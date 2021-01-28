@@ -38,13 +38,13 @@ namespace HackChallenge.DAL.Repositories
 
         public async Task<User> GetByIdAsync(int id)
         {
-            User user = await _db.Users.FirstOrDefaultAsync(u => u.Id == id);
+            User user = await _db.Users.Include(u=>u.LinuxSystem).ThenInclude(s => s.Directories).ThenInclude(d => d.Files).FirstOrDefaultAsync(u => u.Id == id);
             return user;
         }
 
         public async Task<User> GetUserByChatId(long chatId)
         {
-            User user = await _db.Users.FirstOrDefaultAsync(u => u.ChatId == chatId);
+            User user = await _db.Users.Include(u => u.LinuxSystem).ThenInclude(s => s.Directories).ThenInclude(d => d.Files).FirstOrDefaultAsync(u => u.ChatId == chatId);
             return user;
         }
 

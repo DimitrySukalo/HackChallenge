@@ -1,12 +1,15 @@
 ﻿using HackChallenge.BLL.CommandDIInterfaces;
 using HackChallenge.DAL.DB;
+using HackChallenge.DAL.Entities;
 using HackChallenge.DAL.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using User = HackChallenge.DAL.Entities.User;
+using File = HackChallenge.DAL.Entities.File;
 
 namespace HackChallenge.BLL.Commands
 {
@@ -34,13 +37,72 @@ namespace HackChallenge.BLL.Commands
         {
             long chatId = message.Chat.Id;
 
+            List<Directory> directories = new List<Directory>()
+            {
+                new Directory()
+                {
+                    Name = "bin",
+                    TimeOfCreating = DateTime.UtcNow,
+                    Files = new List<File>()
+                },
+                new Directory()
+                {
+                    Name = "Downloads",
+                    TimeOfCreating = DateTime.UtcNow,
+                    Files = new List<File>()
+                },
+                new Directory()
+                {
+                    Name = "var",
+                    TimeOfCreating = DateTime.UtcNow,
+                    Files = new List<File>()
+                },
+                new Directory()
+                {
+                    Name = "root",
+                    TimeOfCreating = DateTime.UtcNow,
+                    Files = new List<File>()
+                },
+                new Directory()
+                {
+                    Name = "backups",
+                    TimeOfCreating = DateTime.UtcNow,
+                    Files = new List<File>()
+                },
+                new Directory()
+                {
+                    Name = "Music",
+                    TimeOfCreating = DateTime.UtcNow,
+                    Files = new List<File>()
+                },
+                new Directory()
+                {
+                    Name = "Videos",
+                    TimeOfCreating = DateTime.UtcNow,
+                    Files = new List<File>()
+                },
+                new Directory()
+                {
+                    Name = "Files",
+                    TimeOfCreating = DateTime.UtcNow,
+                    Files = new List<File>()
+                },
+            };
+
             User user = new User()
             {
                 ChatId = chatId,
                 FirstName = message.From.FirstName,
                 UserName = message.From.Username,
-                LastName = message.From.LastName
+                LastName = message.From.LastName,
+                HaveLinuxPermission = false,
+                LinuxSystem = new LinuxSystem()
+                {
+                    Directories = directories
+                }
             };
+
+
 
             bool isExist = _db.Users.Any(u => u.ChatId == chatId);
             if(!isExist)
