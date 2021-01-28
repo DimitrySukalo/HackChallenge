@@ -10,6 +10,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using User = HackChallenge.DAL.Entities.User;
 using File = HackChallenge.DAL.Entities.File;
+using Telegram.Bot.Types.Enums;
 
 namespace HackChallenge.BLL.Commands
 {
@@ -152,15 +153,15 @@ namespace HackChallenge.BLL.Commands
             if(!isExist)
             {
                 await _userAccessRepository.AddAsync(user);
-                await client.SendTextMessageAsync(chatId, "Спасибо за регистрацию! Теперь мы можем начать ✅");
-                await client.SendTextMessageAsync(chatId, "Процесс подготовки...");
-                await client.SendTextMessageAsync(chatId, "Ещё немного...");
-                await client.SendTextMessageAsync(chatId, "Введите логин и пароль в формате login:password 🌐");
+                await client.SendTextMessageAsync(chatId, "<code>Спасибо за регистрацию! Теперь мы можем начать ✅</code>", ParseMode.Html);
+                await client.SendTextMessageAsync(chatId, "<code>Процесс подготовки...</code>", ParseMode.Html);
+                await client.SendTextMessageAsync(chatId, "<code>Ещё немного...</code>", ParseMode.Html);
+                await client.SendTextMessageAsync(chatId, "<code>Введите логин и пароль в формате login:password 🌐</code>", ParseMode.Html);
 
                 return true;
             }
 
-            await client.SendTextMessageAsync(chatId, "Вы уже зарегестрированы! ✅");
+            await client.SendTextMessageAsync(chatId, "<code>Вы уже зарегестрированы! ✅</code>", ParseMode.Html);
             return false;
         }
 

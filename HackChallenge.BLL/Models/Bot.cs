@@ -16,17 +16,19 @@ namespace HackChallenge.BLL.Models
         private readonly IStartCommand _startCommand;
         private readonly IEnterSignInDataCommand _enterSignInDataCommand;
         private readonly IShowDirsCommand _showDirsCommand;
+        private readonly IPingCommand _pingCommand;
 
         #endregion
 
         public IReadOnlyList<ICommand> Commands => _commands.AsReadOnly();
 
         public Bot(IStartCommand startCommand, IEnterSignInDataCommand enterSignInDataCommand,
-                   IShowDirsCommand showDirsCommand)
+                   IShowDirsCommand showDirsCommand, IPingCommand pingCommand)
         {
             _startCommand = startCommand ?? throw new ArgumentNullException(nameof(startCommand), " was null");
             _enterSignInDataCommand = enterSignInDataCommand ?? throw new ArgumentNullException(nameof(enterSignInDataCommand), " was null");
             _showDirsCommand = showDirsCommand ?? throw new ArgumentNullException(nameof(showDirsCommand), " was null");
+            _pingCommand = pingCommand ?? throw new ArgumentNullException(nameof(pingCommand), " was null");
         }
 
         public TelegramBotClient GetClient()
@@ -38,7 +40,8 @@ namespace HackChallenge.BLL.Models
             {
                 _startCommand,
                 _enterSignInDataCommand,
-                _showDirsCommand
+                _showDirsCommand,
+                _pingCommand
             };
 
             _client = new TelegramBotClient(AppConfig.Token);

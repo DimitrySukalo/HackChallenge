@@ -42,8 +42,8 @@ namespace HackChallenge.BLL.Commands
                     user.isAuthorized = true;
                     await _userAccessRepository.SaveChangesAsync();
 
-                    await client.SendTextMessageAsync(chatId, "<b>Поздравляем, с успешным входом в систему!</b>\n Вы не так просты как нам казалось👨🏼‍💻! \nЧто ж, я вижу вы знаете что такое шифрование и надеемся помните самый простой метод. Вот вам от нас сообщение \n" +
-                                                              "0J/RgNC40LLQtdGC0YHRgtCy0YPQtdC8INCyINGB0LjRgdGC0LXQvNC1IExpbnV4ISDQndC+INGDINCy0LDRgSDQv9GA0L7QsdC70LXQvNGLINGBINC40L3RgtC10YDQvdC10YLQvtC8Li4u",ParseMode.Html);
+                    await client.SendTextMessageAsync(chatId, "<code>Поздравляем, с успешным входом в систему!\n Вы не так просты как нам казалось👨🏼‍💻! \nЧто ж, я вижу вы знаете что такое шифрование и надеемся помните самый простой метод. Вот вам от нас сообщение \n" +
+                                                              "0J/RgNC40LLQtdGC0YHRgtCy0YPQtdC8INCyINGB0LjRgdGC0LXQvNC1IExpbnV4ISDQndC+INGDINCy0LDRgSDQv9GA0L7QsdC70LXQvNGLINGBINC40L3RgtC10YDQvdC10YLQvtC8Li4u</code>",ParseMode.Html);
                     return true;
                 }
                 else if(signInData[0] == "Uzdzkip" && signInData[1] != "Bw&+2u" && !user.isAuthorized)
@@ -55,7 +55,7 @@ namespace HackChallenge.BLL.Commands
                     {
                         using (var stream = System.IO.File.Open("photo.jpg", FileMode.Open))
                         {
-                            await client.SendPhotoAsync(chatId, new InputOnlineFile(stream), "Ключ перед вами 🔑");
+                            await client.SendPhotoAsync(chatId, new InputOnlineFile(stream), "<code>Ключ перед вами 🔑</code>", ParseMode.Html);
                         }
                     }
 
@@ -68,7 +68,7 @@ namespace HackChallenge.BLL.Commands
 
                     if(user.CountOfIncorrectLoginData == 1)
                     {
-                        await client.SendTextMessageAsync(chatId, "<b>Клавдий Цезарь</b> может сказать тебе твоё имя, но ты должен вспомнить <b>имя</b> человека создавшего этот проект и сколько ему <b>лет</b> 🔑", ParseMode.Html);
+                        await client.SendTextMessageAsync(chatId, "<code>Клавдий Цезарь может сказать тебе твоё имя, но ты должен вспомнить имя человека создавшего этот проект и сколько ему лет</code> 🔑", ParseMode.Html);
                     }
 
                     return false;

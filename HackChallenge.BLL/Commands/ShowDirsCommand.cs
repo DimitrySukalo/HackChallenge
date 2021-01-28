@@ -36,7 +36,7 @@ namespace HackChallenge.BLL.Commands
 
                     foreach (var dir in user.LinuxSystem.Directories)
                     {
-                        dirs.Append($"<b>{dir.Name}</b>\n");
+                        dirs.Append($"<code>{dir.Name}</code>\n");
                     }
 
                     await client.SendTextMessageAsync(message.Chat.Id, dirs.ToString(), ParseMode.Html);
@@ -50,7 +50,7 @@ namespace HackChallenge.BLL.Commands
                         StringBuilder dirs = new StringBuilder();
                         foreach (var dir in user.LinuxSystem.Directories)
                         {
-                            dirs.Append($"<b>{dir.GetSizeOfDir()}\t{dir.TimeOfCreating.ToString("MMM", CultureInfo.InvariantCulture)}\t{dir.TimeOfCreating.Day}\t{dir.Name}</b>🗂\n");
+                            dirs.Append($"<code>{dir.GetSizeOfDir()}\t{dir.TimeOfCreating.ToString("MMM", CultureInfo.InvariantCulture)}\t{dir.TimeOfCreating.Day}\t{dir.Name}</code>🗂\n");
                         }
 
                         await client.SendTextMessageAsync(message.Chat.Id, dirs.ToString(), ParseMode.Html);
