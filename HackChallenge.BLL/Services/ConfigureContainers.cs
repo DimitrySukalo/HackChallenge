@@ -21,6 +21,7 @@ namespace HackChallenge.BLL.Services
             builder.RegisterType<ShowDirsCommand>().As<IShowDirsCommand>();
             builder.RegisterType<PingCommand>().As<IPingCommand>();
             builder.RegisterType<IfConfigCommand>().As<IIfConfingCommand>();
+            builder.RegisterType<MonitorModeCommand>().As<IMonitorModeCommand>();
             builder.RegisterType<Bot>();
 
             IContainer container = builder.Build();
