@@ -27,13 +27,13 @@ namespace HackChallenge.BLL.Commands
         public async Task<bool> Execute(Message message, TelegramBotClient client)
         {
             long chatId = message.Chat.Id;
-            User user = await _userAccessRepository.GetUserByChatId(message.Chat.Id);
+            User user = await _userAccessRepository.GetUserByChatId(chatId);
             WifiModule module = user.LinuxSystem.WifiModule;
 
             if(user != null && user.isAuthorized && module.ModuleMode == ModuleMode.Managed)
             {
-                module.ModuleMode = ModuleMode.Monitor;
-                module.Name = "wlan0mon";
+                user.LinuxSystem.WifiModule.ModuleMode = ModuleMode.Monitor;
+                user.LinuxSystem.WifiModule.Name = "wlan0mon";
                 await _userAccessRepository.SaveChangesAsync();
 
                 await client.SendTextMessageAsync(chatId, "<code>Режим изменён</code>", ParseMode.Html);

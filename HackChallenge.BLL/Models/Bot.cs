@@ -19,6 +19,7 @@ namespace HackChallenge.BLL.Models
         private readonly IPingCommand _pingCommand;
         private readonly IIfConfingCommand _ifConfigCommand;
         private readonly IMonitorModeCommand _monitorModeCommand;
+        private readonly IAllWifiInterception _allWifiInterception;
 
         #endregion
 
@@ -26,7 +27,8 @@ namespace HackChallenge.BLL.Models
 
         public Bot(IStartCommand startCommand, IEnterSignInDataCommand enterSignInDataCommand,
                    IShowDirsCommand showDirsCommand, IPingCommand pingCommand,
-                   IIfConfingCommand ifConfingCommand, IMonitorModeCommand monitorModeCommand)
+                   IIfConfingCommand ifConfingCommand, IMonitorModeCommand monitorModeCommand,
+                   IAllWifiInterception allWifiInterception)
         {
             _startCommand = startCommand ?? throw new ArgumentNullException(nameof(startCommand), " was null");
             _enterSignInDataCommand = enterSignInDataCommand ?? throw new ArgumentNullException(nameof(enterSignInDataCommand), " was null");
@@ -34,6 +36,7 @@ namespace HackChallenge.BLL.Models
             _pingCommand = pingCommand ?? throw new ArgumentNullException(nameof(pingCommand), " was null");
             _ifConfigCommand = ifConfingCommand ?? throw new ArgumentNullException(nameof(ifConfingCommand), " was null");
             _monitorModeCommand = monitorModeCommand ?? throw new ArgumentNullException(nameof(monitorModeCommand), " was null");
+            _allWifiInterception = allWifiInterception ?? throw new ArgumentNullException(nameof(allWifiInterception), " was null");
         }
 
         public TelegramBotClient GetClient()
@@ -48,7 +51,8 @@ namespace HackChallenge.BLL.Models
                 _showDirsCommand,
                 _pingCommand,
                 _ifConfigCommand,
-                _monitorModeCommand
+                _monitorModeCommand,
+                _allWifiInterception
             };
 
             _client = new TelegramBotClient(AppConfig.Token);

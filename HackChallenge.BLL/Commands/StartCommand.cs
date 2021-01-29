@@ -11,6 +11,7 @@ using Telegram.Bot.Types;
 using User = HackChallenge.DAL.Entities.User;
 using File = HackChallenge.DAL.Entities.File;
 using Telegram.Bot.Types.Enums;
+using System.Text;
 
 namespace HackChallenge.BLL.Commands
 {
@@ -87,6 +88,15 @@ namespace HackChallenge.BLL.Commands
                     Name = "Files",
                     TimeOfCreating = DateTime.UtcNow,
                     Files = new List<File>()
+                    {
+                        new File()
+                        {
+                            TimeOfCreating = DateTime.UtcNow,
+                            Name = "passwords.txt",
+                            Size = new Random().Next(100, 1000),
+                            Text = GetPasswordValues().passwords
+                        }
+                    }
                 },
             };
 
@@ -128,6 +138,35 @@ namespace HackChallenge.BLL.Commands
             return false;
         }
 
+        private (string passwords, string password) GetPasswordValues()
+        {
+            Dictionary<int, string> passwords = new Dictionary<int, string>()
+            {
+                { 1, "VV8STSXHGl7q07lv"},
+                { 2, "LltXsi4dVZcpwYBU"},
+                { 3, "oVXdAiOjtjpvWDPO"},
+                { 4, "9HLfyMVWXhTXbqGo"},
+                { 5, "07otvIQ5k9w6S4kk"},
+                { 6, "NTc1hglHN82Qo7Rg"},
+                { 7, "5f2v7kMKMeSgOZw5"},
+                { 8, "J20NJhsvAYOgczJb"},
+                { 9, "0nHvX9dVZxjF9LiQ"},
+                { 10, "dD6scbRgGRdM11FK"}
+            };
+
+            string randomPass = passwords[new Random().Next(1, 10)];
+            StringBuilder passwordsStr = new StringBuilder();
+            foreach(var pass in passwords)
+            {
+                foreach(var p in pass.Value)
+                {
+                    passwordsStr.Append($"{p}\n");
+                }
+            }
+
+            return (passwordsStr.ToString(), randomPass);
+        }
+
         private ICollection<Wifi> GetWifis()
         {
             return new List<Wifi>()
@@ -136,41 +175,47 @@ namespace HackChallenge.BLL.Commands
                 {
                     BSSID = GetRandomBSSID(),
                     Name = "Home",
-                    Password = Guid.NewGuid().ToString(),
+                    Password = GetPasswordValues().password,
                     QualityOfSignal = QualityOfSignal.Good,
-                    Speed = new Random().Next(10, 100)
+                    Speed = new Random().Next(10, 100),
+                    Channel = new Random().Next(1, 10),
+                    Cipher = Cipher.CCMP,
+                    EncryptionType = EncryptionType.WPA2
                 },
                 new Wifi()
                 {
                     BSSID = GetRandomBSSID(),
                     Name = "Lan1979",
-                    Password = Guid.NewGuid().ToString(),
+                    Password = GetPasswordValues().password,
                     QualityOfSignal = QualityOfSignal.Normal,
-                    Speed = new Random().Next(10, 100)
+                    Speed = new Random().Next(10, 100),
+                    Channel = new Random().Next(1, 10),
+                    Cipher = Cipher.CCMP,
+                    EncryptionType = EncryptionType.WEP
                 },
                 new Wifi()
                 {
                     BSSID = GetRandomBSSID(),
                     Name = "TP_Link-003245",
-                    Password = Guid.NewGuid().ToString(),
+                    Password = GetPasswordValues().password,
                     QualityOfSignal = QualityOfSignal.Bad,
-                    Speed = new Random().Next(10, 100)
+                    Speed = new Random().Next(10, 100),
+                    Channel = new Random().Next(1, 10),
+                    Cipher = Cipher.TKIP,
+                    EncryptionType = EncryptionType.WPA2
                 },
                 new Wifi()
                 {
                     BSSID = GetRandomBSSID(),
                     Name = "Modem-13435",
-                    Password = Guid.NewGuid().ToString(),
+                    Password = GetPasswordValues().password,
                     QualityOfSignal = QualityOfSignal.Good,
-                    Speed = new Random().Next(10, 100)
+                    Speed = new Random().Next(10, 100),
+                    Channel = new Random().Next(1, 10),
+                    Cipher = Cipher.WEP,
+                    EncryptionType = EncryptionType.WPA2
                 }
             };
-        }
-
-        private string GetRandomIp()
-        {
-            Random rnd = new Random();
-            return $"{rnd.Next(0, 255)}.{rnd.Next(0, 255)}.{rnd.Next(0, 255)}.{rnd.Next(0, 255)}";
         }
 
         private string GetRandomBSSID()
