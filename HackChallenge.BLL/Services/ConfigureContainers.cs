@@ -23,6 +23,7 @@ namespace HackChallenge.BLL.Services
             builder.RegisterType<IfConfigCommand>().As<IIfConfingCommand>();
             builder.RegisterType<MonitorModeCommand>().As<IMonitorModeCommand>();
             builder.RegisterType<AllWifiInterception>().As<IAllWifiInterception>();
+            builder.RegisterType<SendPackagesCommand>().As<ISendPackagesCommand>();
             builder.RegisterType<Bot>();
 
             IContainer container = builder.Build();
