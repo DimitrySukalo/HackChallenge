@@ -14,7 +14,5 @@ namespace HackChallenge.DAL.Interfaces
         Task<T> RemoveByIdAsync(K id);
 
         IEnumerable<T> GetAll();
-
-        Task SaveChangesAsync();
     }
 }

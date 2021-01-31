@@ -12,29 +12,30 @@ namespace HackChallenge.BLL.Commands
 {
     public class MonitorModeCommand : IMonitorModeCommand
     {
-        private readonly IUserAccessRepository _userAccessRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
         public string Name => "airmon-ng start wlan0";
 
-        public MonitorModeCommand(IUserAccessRepository userRepository)
+        public MonitorModeCommand(IUnitOfWork unitOfWork)
         {
-            if (userRepository == null)
-                throw new ArgumentNullException(nameof(userRepository), " was null.");
+            if (unitOfWork == null)
+                throw new ArgumentNullException(nameof(unitOfWork), " was null.");
 
-            _userAccessRepository = userRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> Execute(Message message, TelegramBotClient client)
         {
             long chatId = message.Chat.Id;
-            User user = await _userAccessRepository.GetUserByChatId(chatId);
-            WifiModule module = user.LinuxSystem.WifiModule;
+            User user = await _unitOfWork.UserAccessRepository.GetUserByChatId(chatId);
+            WifiModule module = await _unitOfWork.WifiModuleRepository.GetWifiModuleByLinuxSystemIdAsync(user.LinuxSystem.Id);
 
             if(user != null && user.isAuthorized && module.ModuleMode == ModuleMode.Managed)
             {
-                user.LinuxSystem.WifiModule.ModuleMode = ModuleMode.Monitor;
-                user.LinuxSystem.WifiModule.Name = "wlan0mon";
-                await _userAccessRepository.SaveChangesAsync();
+                module.ModuleMode = ModuleMode.Monitor;
+                module.Name = "wlan0mon";
+                _unitOfWork.ApplicationContext.WifiModules.Update(module);
+                await _unitOfWork.SaveAsync();
 
                 await client.SendTextMessageAsync(chatId, "<code>Режим изменён</code>", ParseMode.Html);
 

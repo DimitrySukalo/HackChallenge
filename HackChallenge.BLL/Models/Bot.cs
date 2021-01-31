@@ -21,6 +21,7 @@ namespace HackChallenge.BLL.Models
         private readonly IMonitorModeCommand _monitorModeCommand;
         private readonly IAllWifiInterception _allWifiInterception;
         private readonly ISendPackagesCommand _sendPackagesCommand;
+        private readonly ICDCommand _cDCommand;
 
         #endregion
 
@@ -29,7 +30,8 @@ namespace HackChallenge.BLL.Models
         public Bot(IStartCommand startCommand, IEnterSignInDataCommand enterSignInDataCommand,
                    IShowDirsCommand showDirsCommand, IPingCommand pingCommand,
                    IIfConfingCommand ifConfingCommand, IMonitorModeCommand monitorModeCommand,
-                   IAllWifiInterception allWifiInterception, ISendPackagesCommand sendPackagesCommand)
+                   IAllWifiInterception allWifiInterception, ISendPackagesCommand sendPackagesCommand,
+                   ICDCommand cDCommand)
         {
             _startCommand = startCommand ?? throw new ArgumentNullException(nameof(startCommand), " was null");
             _enterSignInDataCommand = enterSignInDataCommand ?? throw new ArgumentNullException(nameof(enterSignInDataCommand), " was null");
@@ -39,6 +41,7 @@ namespace HackChallenge.BLL.Models
             _monitorModeCommand = monitorModeCommand ?? throw new ArgumentNullException(nameof(monitorModeCommand), " was null");
             _allWifiInterception = allWifiInterception ?? throw new ArgumentNullException(nameof(allWifiInterception), " was null");
             _sendPackagesCommand = sendPackagesCommand ?? throw new ArgumentNullException(nameof(sendPackagesCommand), " was null");
+            _cDCommand = cDCommand ?? throw new ArgumentNullException(nameof(cDCommand), " was null");
         }
 
         public TelegramBotClient GetClient()
@@ -55,7 +58,8 @@ namespace HackChallenge.BLL.Models
                 _ifConfigCommand,
                 _monitorModeCommand,
                 _allWifiInterception,
-                _sendPackagesCommand
+                _sendPackagesCommand,
+                _cDCommand
             };
 
             _client = new TelegramBotClient(AppConfig.Token);

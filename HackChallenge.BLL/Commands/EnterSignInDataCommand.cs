@@ -14,22 +14,22 @@ namespace HackChallenge.BLL.Commands
 {
     public class EnterSignInDataCommand : IEnterSignInDataCommand
     {
-        private readonly IUserAccessRepository _userAccessRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
         public string Name => "login:password";
 
-        public EnterSignInDataCommand(IUserAccessRepository userRepository)
+        public EnterSignInDataCommand(IUnitOfWork unitOfWork)
         {
-            if (userRepository == null)
-                throw new ArgumentNullException(nameof(userRepository), " was null.");
+            if (unitOfWork == null)
+                throw new ArgumentNullException(nameof(unitOfWork), " was null.");
 
-            _userAccessRepository = userRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> Execute(Message message, TelegramBotClient client)
         {
             long chatId = message.Chat.Id;
-            User user = await _userAccessRepository.GetUserByChatId(chatId);
+            User user = await _unitOfWork.UserAccessRepository.GetUserByChatId(chatId);
 
             if(user != null)
             {
@@ -40,7 +40,8 @@ namespace HackChallenge.BLL.Commands
                     user.CountOfCorrectUserName = 2;
                     user.CountOfIncorrectLoginData = 2;
                     user.isAuthorized = true;
-                    await _userAccessRepository.SaveChangesAsync();
+                    _unitOfWork.ApplicationContext.Users.Update(user);
+                    await _unitOfWork.SaveAsync();
 
                     await client.SendTextMessageAsync(chatId, "<code>Поздравляем, с успешным входом в систему!\n Вы не так просты как нам казалось👨🏼‍💻! \nЧто ж, я вижу вы знаете что такое шифрование и надеемся помните самый простой метод. Вот вам от нас сообщение \n" +
                                                               "0J/RgNC40LLQtdGC0YHRgtCy0YPQtdC8INCyINGB0LjRgdGC0LXQvNC1IExpbnV4ISDQndC+INGDINCy0LDRgSDQv9GA0L7QsdC70LXQvNGLINGBINC40L3RgtC10YDQvdC10YLQvtC8Li4u</code>",ParseMode.Html);
@@ -49,7 +50,7 @@ namespace HackChallenge.BLL.Commands
                 else if(signInData[0] == "Uzdzkip" && signInData[1] != "Bw&+2u" && !user.isAuthorized)
                 {
                     user.CountOfCorrectUserName += 1;
-                    await _userAccessRepository.SaveChangesAsync();
+                    await _unitOfWork.SaveAsync();
 
                     if (user.CountOfCorrectUserName == 1)
                     {
@@ -64,7 +65,8 @@ namespace HackChallenge.BLL.Commands
                 else
                 {
                     user.CountOfIncorrectLoginData += 1;
-                    await _userAccessRepository.SaveChangesAsync();
+                    _unitOfWork.ApplicationContext.Users.Update(user);
+                    await _unitOfWork.SaveAsync();
 
                     if(user.CountOfIncorrectLoginData == 1)
                     {

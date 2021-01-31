@@ -10,5 +10,6 @@ namespace HackChallenge.DAL.Entities
         public DateTime TimeOfCreating { get; set; }
         public string Text { get; set; }
         public Directory Directory { get; set; }
+        public CurrentDirectory CurrentDirectory { get; set; }
     }
 }

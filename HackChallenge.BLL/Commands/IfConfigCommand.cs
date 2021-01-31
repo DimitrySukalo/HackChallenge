@@ -13,21 +13,21 @@ namespace HackChallenge.BLL.Commands
 {
     public class IfConfigCommand : IIfConfingCommand
     {
-        private readonly IUserAccessRepository _userAccessRepository;
+        private readonly IUnitOfWork _unitOfWork;
         public string Name => "ifconfig";
 
-        public IfConfigCommand(IUserAccessRepository userRepository)
+        public IfConfigCommand(IUnitOfWork unitOfWork)
         {
-            if (userRepository == null)
-                throw new ArgumentNullException(nameof(userRepository), " was null.");
+            if (unitOfWork == null)
+                throw new ArgumentNullException(nameof(unitOfWork), " was null.");
 
-            _userAccessRepository = userRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> Execute(Message message, TelegramBotClient client)
         {
             long chatId = message.Chat.Id;
-            User user = await _userAccessRepository.GetUserByChatId(chatId);
+            User user = await _unitOfWork.UserAccessRepository.GetUserByChatId(chatId);
 
             if(user != null && user.isAuthorized)
             {
@@ -40,11 +40,13 @@ namespace HackChallenge.BLL.Commands
                 await client.SendTextMessageAsync(chatId, lanDetails.ToString(), ParseMode.Html);
                 lanDetails.Clear();
 
-                lanDetails.Append($"<code>{user.LinuxSystem.WifiModule.Name}: flags=4163 UP,BROADCAST,RUNNING,MULTICAST  mtu 1500\n" +
+                WifiModule wifiModule = await _unitOfWork.WifiModuleRepository.GetWifiModuleByLinuxSystemIdAsync(user.LinuxSystem.Id); 
+
+                lanDetails.Append($"<code>{wifiModule.Name}: flags=4163 UP,BROADCAST,RUNNING,MULTICAST  mtu 1500\n" +
                                   "inet 192.168.1.104  netmask 255.255.255.0  broadcast 192.168.1.255\n" +
                                   "inet6 fe80::bd6d:680a: 8ca8: c15f  prefixlen 64  scopeid 0xfd  compat, link, site, host \n" +
                                   "ether f8: a2:d6: c8:f7: 4f(Ethernet)\n" +
-                                  $"Mode: {GetWifiMode(user.LinuxSystem.WifiModule.ModuleMode)}</code>");
+                                  $"Mode: {GetWifiMode(wifiModule.ModuleMode)}</code>");
 
                 await client.SendTextMessageAsync(chatId, lanDetails.ToString(), ParseMode.Html);
                 return true;

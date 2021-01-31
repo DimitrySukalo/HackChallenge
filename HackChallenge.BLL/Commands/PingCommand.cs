@@ -11,21 +11,21 @@ namespace HackChallenge.BLL.Commands
 {
     public class PingCommand : IPingCommand
     {
-        private readonly IUserAccessRepository _userAccessRepository;
+        private readonly IUnitOfWork _unitOfWork;
         public string Name => "ping";
 
-        public PingCommand(IUserAccessRepository userRepository)
+        public PingCommand(IUnitOfWork unitOfWork)
         {
-            if (userRepository == null)
-                throw new ArgumentNullException(nameof(userRepository), " was null.");
+            if (unitOfWork == null)
+                throw new ArgumentNullException(nameof(unitOfWork), " was null.");
 
-            _userAccessRepository = userRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> Execute(Message message, TelegramBotClient client)
         {
             long chatId = message.Chat.Id;
-            User user = await _userAccessRepository.GetUserByChatId(chatId);
+            User user = await _unitOfWork.UserAccessRepository.GetUserByChatId(chatId);
 
             if(user != null && user.isAuthorized)
             {

@@ -41,7 +41,10 @@ namespace HackChallenge.DAL.Repositories
             User user = await _db.Users.Include(u=>u.LinuxSystem)
                                        .Include(u => u.LinuxSystem).ThenInclude(s => s.WifiModule).ThenInclude(m => m.Wifis)
                                        .Include(u => u.LinuxSystem)
-                                       .ThenInclude(s => s.Directories)
+                                       .ThenInclude(s => s.CurrentDirectory).ThenInclude(d => d.Directories)
+                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.CurrentDirectory)
+                                       .ThenInclude(d => d.Directories).ThenInclude(d => d.Files)
+                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.CurrentDirectory)
                                        .ThenInclude(d => d.Files).FirstOrDefaultAsync(u => u.Id == id);
             return user;
         }
@@ -51,7 +54,10 @@ namespace HackChallenge.DAL.Repositories
             User user = await _db.Users.Include(u => u.LinuxSystem)
                                        .Include(u => u.LinuxSystem).ThenInclude(s => s.WifiModule).ThenInclude(m => m.Wifis)
                                        .Include(u => u.LinuxSystem)
-                                       .ThenInclude(s => s.Directories)
+                                       .ThenInclude(s => s.CurrentDirectory).ThenInclude(d => d.Directories)
+                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.CurrentDirectory)
+                                       .ThenInclude(d => d.Directories).ThenInclude(d => d.Files)
+                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.CurrentDirectory)
                                        .ThenInclude(d => d.Files).FirstOrDefaultAsync(u => u.ChatId == chatId);
             return user;
         }
@@ -81,11 +87,6 @@ namespace HackChallenge.DAL.Repositories
             }
 
             return null;
-        }
-
-        public async Task SaveChangesAsync()
-        {
-            await _db.SaveChangesAsync();
         }
     }
 }

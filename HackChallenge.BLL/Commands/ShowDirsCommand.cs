@@ -13,30 +13,35 @@ namespace HackChallenge.BLL.Commands
 {
     public class ShowDirsCommand : IShowDirsCommand
     {
-        private readonly IUserAccessRepository _userAccessRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
         public string Name => "ls";
 
-        public ShowDirsCommand(IUserAccessRepository userRepository)
+        public ShowDirsCommand(IUnitOfWork unitOfWork)
         {
-            if (userRepository == null)
-                throw new ArgumentNullException(nameof(userRepository), " was null.");
+            if (unitOfWork == null)
+                throw new ArgumentNullException(nameof(unitOfWork), " was null.");
 
-            _userAccessRepository = userRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> Execute(Message message, TelegramBotClient client)
         {
-            User user = await _userAccessRepository.GetUserByChatId(message.Chat.Id);
+            User user = await _unitOfWork.UserAccessRepository.GetUserByChatId(message.Chat.Id);
             if (user.isAuthorized)
             {
                 if (message.Text == Name)
                 {
                     StringBuilder dirs = new StringBuilder();
 
-                    foreach (var dir in user.LinuxSystem.Directories)
+                    foreach (var dir in user.LinuxSystem.CurrentDirectory.Directories)
                     {
                         dirs.Append($"<code>{dir.Name}</code>\n");
+                    }
+
+                    foreach (var file in user.LinuxSystem.CurrentDirectory.Files)
+                    {
+                        dirs.Append($"<code>{file.Name}</code>\n");
                     }
 
                     await client.SendTextMessageAsync(message.Chat.Id, dirs.ToString(), ParseMode.Html);
@@ -48,9 +53,13 @@ namespace HackChallenge.BLL.Commands
                     if (showDirsParams[0] == Name && showDirsParams[1] == "-la")
                     {
                         StringBuilder dirs = new StringBuilder();
-                        foreach (var dir in user.LinuxSystem.Directories)
+                        foreach (var dir in user.LinuxSystem.CurrentDirectory.Directories)
                         {
                             dirs.Append($"<code>{dir.GetSizeOfDir()}\t{dir.TimeOfCreating.ToString("MMM", CultureInfo.InvariantCulture)}\t{dir.TimeOfCreating.Day}\t{dir.Name}</code>\n");
+                        }
+                        foreach(var file in user.LinuxSystem.CurrentDirectory.Files)
+                        {
+                            dirs.Append($"<code>{file.Size}\t{file.TimeOfCreating.ToString("MMM", CultureInfo.InvariantCulture)}\t{file.TimeOfCreating.Day}\t{file.Name}</code>\n");
                         }
 
                         await client.SendTextMessageAsync(message.Chat.Id, dirs.ToString(), ParseMode.Html);

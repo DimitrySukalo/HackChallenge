@@ -15,6 +15,9 @@ namespace HackChallenge.DAL.Entities
         [ForeignKey("WifiModule")]
         public int WifiModuleId { get; set; }
         public WifiModule WifiModule { get; set; }
-        public IEnumerable<Directory> Directories { get; set; }
+
+        [ForeignKey("CurrentDirectory")]
+        public int CurrentDirId { get; set; }
+        public CurrentDirectory CurrentDirectory { get; set; }
     }
 }

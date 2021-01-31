@@ -17,20 +17,14 @@ namespace HackChallenge.BLL.Commands
 {
     public class StartCommand : IStartCommand
     {
-        private readonly ApplicationContext _db;
-        private readonly IUserAccessRepository _userAccessRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public StartCommand(ApplicationContext context,
-                            IUserAccessRepository userRepository)
+        public StartCommand(IUnitOfWork unitOfWork)
         {
-            if (context == null)
-                throw new ArgumentNullException(nameof(context), " was null.");
+            if (unitOfWork == null)
+                throw new ArgumentNullException(nameof(unitOfWork), " was null.");
 
-            if (userRepository == null)
-                throw new ArgumentNullException(nameof(userRepository), " was null.");
-
-            _db = context;
-            _userAccessRepository = userRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public string Name => "/start";
@@ -96,6 +90,32 @@ namespace HackChallenge.BLL.Commands
                             Size = new Random().Next(100, 1000),
                             Text = GetPasswordValues().passwords
                         }
+                    },
+                    Directories = new List<Directory>()
+                    {
+                        new Directory()
+                        {
+                            Name = "TestDir",
+                            TimeOfCreating = DateTime.UtcNow,
+                            Directories = new List<Directory>()
+                            {
+                                new Directory()
+                                {
+                                    Name = "TestDir2",
+                                    TimeOfCreating = DateTime.UtcNow,
+                                    Files = new List<File>()
+                                    {
+                                        new File()
+                                        {
+                                            Name = "Tests.txt",
+                                            Size = new Random().Next(100, 1000),
+                                            Text = Guid.NewGuid().ToString(),
+                                            TimeOfCreating = DateTime.UtcNow
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 },
             };
@@ -109,23 +129,28 @@ namespace HackChallenge.BLL.Commands
                 HaveLinuxPermission = false,
                 LinuxSystem = new LinuxSystem()
                 {
-                    Directories = directories,
                     IsConnectedTheInternet = false,
                     WifiModule = new WifiModule()
                     {
                         ModuleMode = ModuleMode.Managed,
                         Name = "wlan0",
                         Wifis = GetWifis()
+                    },
+                    CurrentDirectory = new CurrentDirectory()
+                    {
+                        Directories = directories,
+                        TimeOfCreating = DateTime.UtcNow,
+                        Name = "root"
                     }
                 }
             };
 
 
 
-            bool isExist = _db.Users.Any(u => u.ChatId == chatId);
+            bool isExist = _unitOfWork.ApplicationContext.Users.Any(u => u.ChatId == chatId);
             if(!isExist)
             {
-                await _userAccessRepository.AddAsync(user);
+                await _unitOfWork.UserAccessRepository.AddAsync(user);
                 await client.SendTextMessageAsync(chatId, "<code>Спасибо за регистрацию! Теперь мы можем начать ✅</code>", ParseMode.Html);
                 await client.SendTextMessageAsync(chatId, "<code>Процесс подготовки...</code>", ParseMode.Html);
                 await client.SendTextMessageAsync(chatId, "<code>Ещё немного...</code>", ParseMode.Html);
