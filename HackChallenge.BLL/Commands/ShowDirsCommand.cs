@@ -30,10 +30,18 @@ namespace HackChallenge.BLL.Commands
             User user = await _unitOfWork.UserAccessRepository.GetUserByChatId(message.Chat.Id);
             if (user.isAuthorized)
             {
+                StringBuilder dirs = new StringBuilder();
+
+                if (user.LinuxSystem.CurrentDirectory.Directories.Count == 0 &&
+                    user.LinuxSystem.CurrentDirectory.Files.Count == 0)
+                {
+                    dirs.Append("<code>Папка пустая</code>");
+                    await client.SendTextMessageAsync(message.Chat.Id, dirs.ToString(), ParseMode.Html);
+
+                    return true;
+                }
                 if (message.Text == Name)
                 {
-                    StringBuilder dirs = new StringBuilder();
-
                     foreach (var dir in user.LinuxSystem.CurrentDirectory.Directories)
                     {
                         dirs.Append($"<code>{dir.Name}</code>\n");
@@ -52,7 +60,6 @@ namespace HackChallenge.BLL.Commands
                     string[] showDirsParams = message.Text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                     if (showDirsParams[0] == Name && showDirsParams[1] == "-la")
                     {
-                        StringBuilder dirs = new StringBuilder();
                         foreach (var dir in user.LinuxSystem.CurrentDirectory.Directories)
                         {
                             dirs.Append($"<code>{dir.GetSizeOfDir()}\t{dir.TimeOfCreating.ToString("MMM", CultureInfo.InvariantCulture)}\t{dir.TimeOfCreating.Day}\t{dir.Name}</code>\n");

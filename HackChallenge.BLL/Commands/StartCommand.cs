@@ -39,43 +39,43 @@ namespace HackChallenge.BLL.Commands
                 {
                     Name = "bin",
                     TimeOfCreating = DateTime.UtcNow,
-                    Files = new List<File>()
+                    Files = new List<File>(),
+                    Directories = new List<Directory>()
                 },
                 new Directory()
                 {
                     Name = "Downloads",
                     TimeOfCreating = DateTime.UtcNow,
-                    Files = new List<File>()
+                    Files = new List<File>(),
+                    Directories = new List<Directory>()
                 },
                 new Directory()
                 {
                     Name = "var",
                     TimeOfCreating = DateTime.UtcNow,
-                    Files = new List<File>()
-                },
-                new Directory()
-                {
-                    Name = "root",
-                    TimeOfCreating = DateTime.UtcNow,
-                    Files = new List<File>()
+                    Files = new List<File>(),
+                    Directories = new List<Directory>()
                 },
                 new Directory()
                 {
                     Name = "backups",
                     TimeOfCreating = DateTime.UtcNow,
-                    Files = new List<File>()
+                    Files = new List<File>(),
+                    Directories = new List<Directory>()
                 },
                 new Directory()
                 {
                     Name = "Music",
                     TimeOfCreating = DateTime.UtcNow,
-                    Files = new List<File>()
+                    Files = new List<File>(),
+                    Directories = new List<Directory>()
                 },
                 new Directory()
                 {
                     Name = "Videos",
                     TimeOfCreating = DateTime.UtcNow,
-                    Files = new List<File>()
+                    Files = new List<File>(),
+                    Directories = new List<Directory>()
                 },
                 new Directory()
                 {
@@ -140,7 +140,7 @@ namespace HackChallenge.BLL.Commands
                     {
                         Directories = directories,
                         TimeOfCreating = DateTime.UtcNow,
-                        Name = "root"
+                        Name = "@root"
                     }
                 }
             };
