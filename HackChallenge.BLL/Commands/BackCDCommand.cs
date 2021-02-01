@@ -33,6 +33,12 @@ namespace HackChallenge.BLL.Commands
             {
                 var searchedDir = user.LinuxSystem.CurrentDirectory.Name.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries).ToList();
                 searchedDir.Remove(searchedDir.Last());
+                if(searchedDir.Count == 0)
+                {
+                    await client.SendTextMessageAsync(chatId, "<code>Вы в корне</code>", ParseMode.Html);
+                    return true;
+                }
+
                 if (searchedDir.Last() == user.LinuxSystem.MainDirectory.Name)
                 {
                     user.LinuxSystem.PreviousDirectory = new PreviousDirectory()
