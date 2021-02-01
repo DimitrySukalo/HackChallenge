@@ -31,6 +31,7 @@ namespace HackChallenge
             services.AddTransient<ISendPackagesCommand, SendPackagesCommand>();
             services.AddTransient<ICDCommand, CDCommand>();
             services.AddTransient<IBackCDCommand, BackCDCommand>();
+            services.AddTransient<IPWDCommand, PWDCommand>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<Bot>();
 

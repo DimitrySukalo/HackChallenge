@@ -23,6 +23,7 @@ namespace HackChallenge.BLL.Models
         private readonly ISendPackagesCommand _sendPackagesCommand;
         private readonly ICDCommand _cDCommand;
         private readonly IBackCDCommand _backCDCommand;
+        private readonly IPWDCommand _pWDCommand;
 
         #endregion
 
@@ -32,7 +33,7 @@ namespace HackChallenge.BLL.Models
                    IShowDirsCommand showDirsCommand, IPingCommand pingCommand,
                    IIfConfingCommand ifConfingCommand, IMonitorModeCommand monitorModeCommand,
                    IAllWifiInterception allWifiInterception, ISendPackagesCommand sendPackagesCommand,
-                   ICDCommand cDCommand, IBackCDCommand backCDCommand)
+                   ICDCommand cDCommand, IBackCDCommand backCDCommand, IPWDCommand pWDCommand)
         {
             _startCommand = startCommand ?? throw new ArgumentNullException(nameof(startCommand), " was null");
             _enterSignInDataCommand = enterSignInDataCommand ?? throw new ArgumentNullException(nameof(enterSignInDataCommand), " was null");
@@ -44,6 +45,7 @@ namespace HackChallenge.BLL.Models
             _sendPackagesCommand = sendPackagesCommand ?? throw new ArgumentNullException(nameof(sendPackagesCommand), " was null");
             _cDCommand = cDCommand ?? throw new ArgumentNullException(nameof(cDCommand), " was null");
             _backCDCommand = backCDCommand ?? throw new ArgumentNullException(nameof(backCDCommand), " was null");
+            _pWDCommand = pWDCommand ?? throw new ArgumentNullException(nameof(pWDCommand), " was null");
         }
 
         public TelegramBotClient GetClient()
@@ -62,7 +64,8 @@ namespace HackChallenge.BLL.Models
                 _allWifiInterception,
                 _sendPackagesCommand,
                 _cDCommand,
-                _backCDCommand
+                _backCDCommand,
+                _pWDCommand
             };
 
             _client = new TelegramBotClient(AppConfig.Token);
