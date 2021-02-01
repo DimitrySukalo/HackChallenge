@@ -45,7 +45,17 @@ namespace HackChallenge.DAL.Repositories
                                        .Include(u => u.LinuxSystem).ThenInclude(s => s.CurrentDirectory)
                                        .ThenInclude(d => d.Directories).ThenInclude(d => d.Files)
                                        .Include(u => u.LinuxSystem).ThenInclude(s => s.CurrentDirectory)
-                                       .ThenInclude(d => d.Files).FirstOrDefaultAsync(u => u.Id == id);
+                                       .ThenInclude(d => d.Files)
+                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.PreviousDirectory)
+                                       .ThenInclude(p => p.Directories)
+                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.PreviousDirectory)
+                                       .ThenInclude(p => p.Files)
+                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.AllDirectories)
+                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.MainDirectory)
+                                       .ThenInclude(m => m.Directories)
+                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.MainDirectory)
+                                       .ThenInclude(m => m.Files)
+                                       .FirstOrDefaultAsync(u => u.Id == id);
             return user;
         }
 
@@ -58,7 +68,17 @@ namespace HackChallenge.DAL.Repositories
                                        .Include(u => u.LinuxSystem).ThenInclude(s => s.CurrentDirectory)
                                        .ThenInclude(d => d.Directories).ThenInclude(d => d.Files)
                                        .Include(u => u.LinuxSystem).ThenInclude(s => s.CurrentDirectory)
-                                       .ThenInclude(d => d.Files).FirstOrDefaultAsync(u => u.ChatId == chatId);
+                                       .ThenInclude(d => d.Files)
+                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.PreviousDirectory)
+                                       .ThenInclude(p => p.Directories)
+                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.PreviousDirectory)
+                                       .ThenInclude(p => p.Files)
+                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.AllDirectories)
+                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.MainDirectory)
+                                       .ThenInclude(m => m.Directories)
+                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.MainDirectory)
+                                       .ThenInclude(m => m.Files)
+                                       .FirstOrDefaultAsync(u => u.ChatId == chatId);
             return user;
         }
 

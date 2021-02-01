@@ -30,6 +30,7 @@ namespace HackChallenge
             services.AddTransient<IAllWifiInterception, AllWifiInterception>();
             services.AddTransient<ISendPackagesCommand, SendPackagesCommand>();
             services.AddTransient<ICDCommand, CDCommand>();
+            services.AddTransient<IBackCDCommand, BackCDCommand>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<Bot>();
 

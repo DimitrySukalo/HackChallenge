@@ -43,6 +43,14 @@ namespace HackChallenge.BLL.Commands
                         if (directory != null)
                         {
                             string currentDirName = user.LinuxSystem.CurrentDirectory.Name;
+                            user.LinuxSystem.PreviousDirectory = new PreviousDirectory()
+                            {
+                                Directories = user.LinuxSystem.CurrentDirectory.Directories,
+                                Name = user.LinuxSystem.CurrentDirectory.Name,
+                                Files = user.LinuxSystem.CurrentDirectory.Files,
+                                TimeOfCreating = user.LinuxSystem.CurrentDirectory.TimeOfCreating
+                            };
+
                             user.LinuxSystem.CurrentDirectory = new CurrentDirectory()
                             {
                                 Name = $"{currentDirName}/{directory.Name}",
@@ -83,6 +91,15 @@ namespace HackChallenge.BLL.Commands
                         if(directory != null)
                         {
                             string currentDirName = user.LinuxSystem.CurrentDirectory.Name;
+
+                            user.LinuxSystem.PreviousDirectory = new PreviousDirectory()
+                            {
+                                Directories = user.LinuxSystem.CurrentDirectory.Directories,
+                                Name = user.LinuxSystem.CurrentDirectory.Name,
+                                Files = user.LinuxSystem.CurrentDirectory.Files,
+                                TimeOfCreating = user.LinuxSystem.CurrentDirectory.TimeOfCreating
+                            };
+
                             user.LinuxSystem.CurrentDirectory = new CurrentDirectory()
                             {
                                 Name = $"{currentDirName}/{path}",
@@ -103,6 +120,8 @@ namespace HackChallenge.BLL.Commands
 
             return false;
         }
+
+        //Найти предадущую дерикторию и установить в систему
 
         private Directory FindDir(Directory directory, string dirName)
         {

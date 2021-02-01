@@ -11,5 +11,7 @@ namespace HackChallenge.DAL.Entities
         public string Text { get; set; }
         public Directory Directory { get; set; }
         public CurrentDirectory CurrentDirectory { get; set; }
+        public PreviousDirectory PreviousDirectory { get; set; }
+        public MainDirectory MainDirectory { get; set; }
     }
 }

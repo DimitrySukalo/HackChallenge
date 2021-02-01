@@ -19,5 +19,14 @@ namespace HackChallenge.DAL.Entities
         [ForeignKey("CurrentDirectory")]
         public int CurrentDirId { get; set; }
         public CurrentDirectory CurrentDirectory { get; set; }
+
+        [ForeignKey("PreviousDirectory")]
+        public int PreviousDirectoryId { get; set; }
+        public PreviousDirectory PreviousDirectory { get; set; }
+
+        [ForeignKey("MainDirectory")]
+        public int MainDirectoryId { get; set; }
+        public MainDirectory MainDirectory { get; set; }
+        public virtual ICollection<Directory> AllDirectories { get; set; }
     }
 }
