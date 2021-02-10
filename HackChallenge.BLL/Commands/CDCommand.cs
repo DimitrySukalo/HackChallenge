@@ -2,11 +2,13 @@
 using HackChallenge.DAL.Entities;
 using HackChallenge.DAL.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using File = HackChallenge.DAL.Entities.File;
 using User = HackChallenge.DAL.Entities.User;
 
 namespace HackChallenge.BLL.Commands
@@ -36,40 +38,59 @@ namespace HackChallenge.BLL.Commands
                 if(parameters[0] == "cd")
                 {
                     var text = message.Text.Remove(0, 2).Trim();
-                    var directory = user.LinuxSystem.CurrentDirectory.Directories.FirstOrDefault(d => d.Name == text);
 
-                    if (directory != null)
+                    LinuxSystem linuxSystem = await _unitOfWork.LinuxRepository.GetByIdAsync(user.Id);
+                    if (linuxSystem != null)
                     {
-                        string currentDirName = user.LinuxSystem.CurrentDirectory.Name;
-                        user.LinuxSystem.PreviousDirectory = new PreviousDirectory()
+                        CurrentDirectory currentDirectory = await _unitOfWork.CurrentDirectoryRepository.GetByIdAsync(linuxSystem.CurrentDirId);
+                        if (currentDirectory != null)
                         {
-                            Directories = user.LinuxSystem.CurrentDirectory.Directories,
-                            Name = user.LinuxSystem.CurrentDirectory.Name,
-                            Files = user.LinuxSystem.CurrentDirectory.Files,
-                            TimeOfCreating = user.LinuxSystem.CurrentDirectory.TimeOfCreating
-                        };
+                            Directory directory = _unitOfWork.DirectoryRepository.GetDirectoriesOfCurrentDirectory(currentDirectory.Id)
+                                                                                 .FirstOrDefault(d => d.Name == text);
 
-                        user.LinuxSystem.CurrentDirectory = new CurrentDirectory()
-                        {
-                            Name = $"{currentDirName}/{directory.Name}",
-                            Directories = directory.Directories,
-                            Files = directory.Files,
-                            TimeOfCreating = directory.TimeOfCreating
-                        };
+                            if (directory != null)
+                            {
+                                string currentDirName = currentDirectory.Name;
 
-                        _unitOfWork.ApplicationContext.CurrentDirectories.Update(user.LinuxSystem.CurrentDirectory);
-                        await _unitOfWork.SaveAsync();
+                                List<Directory> directories = _unitOfWork.DirectoryRepository.GetDirectoriesOfCurrentDirectory(currentDirectory.Id).ToList();
+                                List<File> files = _unitOfWork.FileRepository.GetFilesByCurrentDirId(currentDirectory.Id).ToList();
+
+                                user.LinuxSystem.PreviousDirectory = new PreviousDirectory()
+                                {
+                                    Directories = directories,
+                                    Name = currentDirName,
+                                    Files = files,
+                                    TimeOfCreating = currentDirectory.TimeOfCreating
+                                };
+
+                                directory = _unitOfWork.DirectoryRepository.GetInDirectory(directory);
+
+                                user.LinuxSystem.CurrentDirectory = new CurrentDirectory()
+                                {
+                                    Name = $"{currentDirName}/{directory.Name}",
+                                    Directories = directory.Directories,
+                                    Files = directory.Files,
+                                    TimeOfCreating = directory.TimeOfCreating
+                                };
+
+                                await _unitOfWork.SaveAsync();
 
 
-                        await client.SendTextMessageAsync(chatId, "<code>Папка изменена</code>", ParseMode.Html);
+                                await client.SendTextMessageAsync(chatId, "<code>Папка изменена</code>", ParseMode.Html);
 
-                        return true;
-                    }
-                    else
-                    {
-                        await client.SendTextMessageAsync(chatId, "<code>Директории не найдено</code>", ParseMode.Html);
+                                return true;
+                            }
+                            else
+                            {
+                                await client.SendTextMessageAsync(chatId, "<code>Директории не найдено</code>", ParseMode.Html);
+                                return false;
+                            }
+                        }
+
                         return false;
                     }
+
+                    return false;
                 }
             }
 

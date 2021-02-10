@@ -5,6 +5,5 @@ namespace HackChallenge.DAL.Interfaces
 {
     public interface IWifiModuleRepository : IRepository<WifiModule, int>
     {
-        Task<WifiModule> GetWifiModuleByLinuxSystemIdAsync(int id);
     }
 }

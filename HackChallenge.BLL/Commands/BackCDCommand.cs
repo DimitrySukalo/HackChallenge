@@ -2,11 +2,13 @@
 using HackChallenge.DAL.Entities;
 using HackChallenge.DAL.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using File = HackChallenge.DAL.Entities.File;
 using User = HackChallenge.DAL.Entities.User;
 
 namespace HackChallenge.BLL.Commands
@@ -39,22 +41,29 @@ namespace HackChallenge.BLL.Commands
                     return true;
                 }
 
-                if (searchedDir.Last() == user.LinuxSystem.MainDirectory.Name)
+                LinuxSystem linuxSystem = await _unitOfWork.LinuxRepository.GetByIdAsync(user.Id);
+                PreviousDirectory previousDirectory = await _unitOfWork.PreviousDirectoryRepository.GetByIdAsync(linuxSystem.PreviousDirectoryId);
+                MainDirectory mainDirectory = await _unitOfWork.MainDirectoryRepository.GetByIdAsync(linuxSystem.MainDirectoryId);
+
+                if (searchedDir.Last() == mainDirectory.Name)
                 {
+                    List<Directory> directories = GetOfMainDir(mainDirectory).dirs;
+                    List<File> files = GetOfMainDir(mainDirectory).files;
+
                     user.LinuxSystem.PreviousDirectory = new PreviousDirectory()
                     {
-                        Directories = user.LinuxSystem.MainDirectory.Directories,
-                        Files = user.LinuxSystem.MainDirectory.Files,
-                        Name = user.LinuxSystem.MainDirectory.Name,
-                        TimeOfCreating = user.LinuxSystem.MainDirectory.TimeOfCreating
+                        Directories = directories,
+                        Files = files,
+                        Name = mainDirectory.Name,
+                        TimeOfCreating = mainDirectory.TimeOfCreating
                     };
 
                     user.LinuxSystem.CurrentDirectory = new CurrentDirectory()
                     {
-                        Directories = user.LinuxSystem.MainDirectory.Directories,
-                        Files = user.LinuxSystem.MainDirectory.Files,
-                        Name = user.LinuxSystem.MainDirectory.Name,
-                        TimeOfCreating = user.LinuxSystem.MainDirectory.TimeOfCreating
+                        Directories = directories,
+                        Files = files,
+                        Name = mainDirectory.Name,
+                        TimeOfCreating = mainDirectory.TimeOfCreating
                     };
 
                     await _unitOfWork.SaveAsync();
@@ -62,14 +71,18 @@ namespace HackChallenge.BLL.Commands
                     return true;
                 }
 
+                List<Directory> dirsOfPrev = _unitOfWork.DirectoryRepository.GetDirsByPrevDirId(previousDirectory.Id).ToList();
+                List<File> filesOfPrevDir = _unitOfWork.FileRepository.GetFilesByPrevDirId(previousDirectory.Id).ToList();
 
                 user.LinuxSystem.CurrentDirectory = new CurrentDirectory()
                 {
-                    Directories = user.LinuxSystem.PreviousDirectory.Directories,
-                    Files = user.LinuxSystem.PreviousDirectory.Files,
-                    Name = user.LinuxSystem.PreviousDirectory.Name,
-                    TimeOfCreating = user.LinuxSystem.PreviousDirectory.TimeOfCreating
+                    Directories = dirsOfPrev,
+                    Files = filesOfPrevDir,
+                    Name = previousDirectory.Name,
+                    TimeOfCreating = previousDirectory.TimeOfCreating
                 };
+
+                await _unitOfWork.SaveAsync();
 
                 Directory previousDir = null;
                 searchedDir.Remove(searchedDir.Last());
@@ -104,14 +117,17 @@ namespace HackChallenge.BLL.Commands
                 }
                 else
                 {
-                    if(searchedDir.Last() == user.LinuxSystem.MainDirectory.Name)
+                    if(searchedDir.Last() == mainDirectory.Name)
                     {
+                        List<Directory> mainDirs = GetOfMainDir(mainDirectory).dirs;
+                        List<File> files = GetOfMainDir(mainDirectory).files;
+
                         user.LinuxSystem.PreviousDirectory = new PreviousDirectory()
                         {
-                            Directories = user.LinuxSystem.MainDirectory.Directories,
-                            Files = user.LinuxSystem.MainDirectory.Files,
-                            Name = user.LinuxSystem.MainDirectory.Name,
-                            TimeOfCreating = user.LinuxSystem.MainDirectory.TimeOfCreating
+                            Directories = mainDirs,
+                            Files = files,
+                            Name = mainDirectory.Name,
+                            TimeOfCreating = mainDirectory.TimeOfCreating
                         };
                     }
                 }
@@ -123,6 +139,14 @@ namespace HackChallenge.BLL.Commands
             }
 
             return false;
+        }
+
+        private (List<Directory> dirs, List<File> files) GetOfMainDir(MainDirectory mainDirectory)
+        {
+            List<Directory> directories = _unitOfWork.DirectoryRepository.GetDirsByMainDirId(mainDirectory.Id).ToList();
+            List<File> files = _unitOfWork.FileRepository.GetFilesByMainDirId(mainDirectory.Id).ToList();
+
+            return (directories, files);
         }
 
         private Directory FindDir(Directory directory, string dirName)

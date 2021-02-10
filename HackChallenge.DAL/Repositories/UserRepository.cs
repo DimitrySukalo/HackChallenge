@@ -38,47 +38,13 @@ namespace HackChallenge.DAL.Repositories
 
         public async Task<User> GetByIdAsync(int id)
         {
-            User user = await _db.Users.Include(u=>u.LinuxSystem)
-                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.WifiModule).ThenInclude(m => m.Wifis)
-                                       .Include(u => u.LinuxSystem)
-                                       .ThenInclude(s => s.CurrentDirectory).ThenInclude(d => d.Directories)
-                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.CurrentDirectory)
-                                       .ThenInclude(d => d.Directories).ThenInclude(d => d.Files)
-                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.CurrentDirectory)
-                                       .ThenInclude(d => d.Files)
-                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.PreviousDirectory)
-                                       .ThenInclude(p => p.Directories)
-                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.PreviousDirectory)
-                                       .ThenInclude(p => p.Files)
-                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.AllDirectories)
-                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.MainDirectory)
-                                       .ThenInclude(m => m.Directories)
-                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.MainDirectory)
-                                       .ThenInclude(m => m.Files)
-                                       .FirstOrDefaultAsync(u => u.Id == id);
+            User user = await _db.Users.FirstOrDefaultAsync(u => u.Id == id);
             return user;
         }
 
         public async Task<User> GetUserByChatId(long chatId)
         {
-            User user = await _db.Users.Include(u => u.LinuxSystem)
-                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.WifiModule).ThenInclude(m => m.Wifis)
-                                       .Include(u => u.LinuxSystem)
-                                       .ThenInclude(s => s.CurrentDirectory).ThenInclude(d => d.Directories)
-                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.CurrentDirectory)
-                                       .ThenInclude(d => d.Directories).ThenInclude(d => d.Files)
-                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.CurrentDirectory)
-                                       .ThenInclude(d => d.Files)
-                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.PreviousDirectory)
-                                       .ThenInclude(p => p.Directories)
-                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.PreviousDirectory)
-                                       .ThenInclude(p => p.Files)
-                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.AllDirectories)
-                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.MainDirectory)
-                                       .ThenInclude(m => m.Directories)
-                                       .Include(u => u.LinuxSystem).ThenInclude(s => s.MainDirectory)
-                                       .ThenInclude(m => m.Files)
-                                       .FirstOrDefaultAsync(u => u.ChatId == chatId);
+            User user = await _db.Users.FirstOrDefaultAsync(u => u.ChatId == chatId);
             return user;
         }
 

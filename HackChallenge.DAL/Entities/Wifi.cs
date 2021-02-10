@@ -11,5 +11,8 @@
         public EncryptionType EncryptionType { get; set; }
         public QualityOfSignal QualityOfSignal { get; set; }
         public Cipher Cipher { get; set; }
+        
+        public int WifiModuleId { get; set; }
+        public WifiModule WifiModule { get; set; }
     }
 }

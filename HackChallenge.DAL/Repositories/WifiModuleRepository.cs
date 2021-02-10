@@ -38,13 +38,7 @@ namespace HackChallenge.DAL.Repositories
 
         public async Task<WifiModule> GetByIdAsync(int id)
         {
-            WifiModule wifiModule = await _db.WifiModules.Include(m => m.Wifis).FirstOrDefaultAsync(m => m.Id == id);
-            return wifiModule;
-        }
-
-        public async Task<WifiModule> GetWifiModuleByLinuxSystemIdAsync(int id)
-        {
-            WifiModule wifiModule = await _db.WifiModules.Include(m => m.Wifis).FirstOrDefaultAsync(m => m.LinuxSystem.Id == id);
+            WifiModule wifiModule = await _db.WifiModules.FirstOrDefaultAsync(m => m.Id == id);
             return wifiModule;
         }
 

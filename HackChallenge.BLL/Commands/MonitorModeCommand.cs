@@ -28,18 +28,31 @@ namespace HackChallenge.BLL.Commands
         {
             long chatId = message.Chat.Id;
             User user = await _unitOfWork.UserAccessRepository.GetUserByChatId(chatId);
-            WifiModule module = await _unitOfWork.WifiModuleRepository.GetWifiModuleByLinuxSystemIdAsync(user.LinuxSystem.Id);
-
-            if(user != null && user.isAuthorized && module.ModuleMode == ModuleMode.Managed)
+            if (user != null)
             {
-                module.ModuleMode = ModuleMode.Monitor;
-                module.Name = "wlan0mon";
-                _unitOfWork.ApplicationContext.WifiModules.Update(module);
-                await _unitOfWork.SaveAsync();
+                LinuxSystem linuxSystem = await _unitOfWork.LinuxRepository.GetByIdAsync(user.Id);
+                if (linuxSystem != null)
+                {
+                    WifiModule wifiModule = await _unitOfWork.WifiModuleRepository.GetByIdAsync(linuxSystem.WifiModuleId);
+                    if (wifiModule != null)
+                    {
+                        if (user.isAuthorized && wifiModule.ModuleMode == ModuleMode.Managed)
+                        {
+                            wifiModule.ModuleMode = ModuleMode.Monitor;
+                            wifiModule.Name = "wlan0mon";
 
-                await client.SendTextMessageAsync(chatId, "<code>Режим изменён</code>", ParseMode.Html);
+                            await _unitOfWork.SaveAsync();
 
-                return true;
+                            await client.SendTextMessageAsync(chatId, "<code>Режим изменён</code>", ParseMode.Html);
+
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+
+                return false;
             }
 
             return false;

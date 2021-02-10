@@ -8,6 +8,12 @@ namespace HackChallenge.DAL.Interfaces
         IUserAccessRepository UserAccessRepository { get; }
         IDirectoryRepository DirectoryRepository { get; }
         IWifiModuleRepository WifiModuleRepository { get; }
+        ILinuxRepository LinuxRepository { get; }
+        IFileRepository FileRepository { get; }
+        ICurrentDirectoryRepository CurrentDirectoryRepository { get; }
+        IPreviousDirectoryRepository PreviousDirectoryRepository { get; }
+        IMainDirectoryRepository MainDirectoryRepository { get; }
+        IWifiRepository WifiRepository { get; }
         ApplicationContext ApplicationContext { get; }
 
         Task SaveAsync();

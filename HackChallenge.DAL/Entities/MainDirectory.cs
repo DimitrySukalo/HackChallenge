@@ -14,9 +14,14 @@ namespace HackChallenge.DAL.Entities
         public virtual ICollection<File> Files { get; set; }
         public virtual ICollection<Directory> Directories { get; set; }
 
-        public double GetSizeOfDir()
+        public double GetSizeOfDir(List<File> files = null)
         {
-            return Files.Select(f => f.Size).Sum();
+            if (files == null)
+            {
+                return Files.Select(f => f.Size).Sum();
+            }
+
+            return files.Select(f => f.Size).Sum();
         }
     }
 }

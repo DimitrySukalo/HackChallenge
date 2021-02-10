@@ -45,6 +45,31 @@ namespace HackChallenge.DAL.Repositories
             return directory;
         }
 
+        public IEnumerable<Directory> GetDirectoriesOfCurrentDirectory(int id)
+        {
+            IEnumerable<Directory> directories = _db.Directories.Where(d => d.CurrentDirectoryId == id);
+            return directories;
+        }
+
+        public IEnumerable<Directory> GetDirsByMainDirId(int id)
+        {
+            IEnumerable<Directory> directories = _db.Directories.Where(d => d.MainDirectoryId == id);
+            return directories;
+        }
+
+        public IEnumerable<Directory> GetDirsByPrevDirId(int id)
+        {
+            IEnumerable<Directory> directories = _db.Directories.Where(d => d.PreviousDirectoryId == id);
+            return directories;
+        }
+
+        public async Task<IEnumerable<Directory>> GetDirsOfLinuxSystemId(int id)
+        {
+            LinuxSystem linuxSystem = await _db.LinuxSystems.Include(s => s.AllDirectories).FirstOrDefaultAsync(s => s.Id == id);
+            IEnumerable<Directory> directories = linuxSystem.AllDirectories;
+            return directories;
+        }
+
         public Directory GetInDirectory(Directory directory)
         {
             Directory dir = _db.Directories.Include(d => d.Directories).Include(d => d.Files).FirstOrDefault(d => d.Id == directory.Id);

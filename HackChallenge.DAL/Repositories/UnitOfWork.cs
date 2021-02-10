@@ -10,6 +10,12 @@ namespace HackChallenge.DAL.Repositories
         private UserRepository userRepository;
         private DirectoryRepository directoryRepository;
         private WifiModuleRepository wifiModuleRepository;
+        private LinuxRepository linuxRepository;
+        private CurrentDirectoryRepository currentDirectory;
+        private PreviousDirectoryRepository previousDirectory;
+        private FileRepository fileRepository;
+        private MainDirectoryRepository mainDirectory;
+        private WifiRepository wifiRepository;
 
         public ApplicationContext ApplicationContext { get; }
 
@@ -51,6 +57,72 @@ namespace HackChallenge.DAL.Repositories
                     wifiModuleRepository = new WifiModuleRepository(ApplicationContext);
 
                 return wifiModuleRepository;
+            }
+        }
+
+        public ILinuxRepository LinuxRepository
+        {
+            get
+            {
+                if (linuxRepository == null)
+                    linuxRepository = new LinuxRepository(ApplicationContext);
+
+                return linuxRepository;
+            }
+        }
+
+        public IFileRepository FileRepository
+        {
+            get
+            {
+                if (fileRepository == null)
+                    fileRepository = new FileRepository(ApplicationContext);
+
+                return fileRepository;
+            }
+        }
+
+        public ICurrentDirectoryRepository CurrentDirectoryRepository
+        {
+            get
+            {
+                if (currentDirectory == null)
+                    currentDirectory = new CurrentDirectoryRepository(ApplicationContext);
+
+                return currentDirectory;
+            }
+        }
+
+        public IPreviousDirectoryRepository PreviousDirectoryRepository
+        {
+            get
+            {
+                if (previousDirectory == null)
+                    previousDirectory = new PreviousDirectoryRepository(ApplicationContext);
+
+                return previousDirectory;
+            }
+        }
+
+        public IMainDirectoryRepository MainDirectoryRepository
+        {
+            get
+            {
+                if (mainDirectory == null)
+                    mainDirectory = new MainDirectoryRepository(ApplicationContext);
+
+                return mainDirectory;
+            }
+        }
+
+        public IWifiRepository WifiRepository
+        {
+            get
+            {
+                if (wifiRepository == null)
+                    wifiRepository = new WifiRepository(ApplicationContext);
+
+                return wifiRepository;
             }
         }
 

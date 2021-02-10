@@ -31,25 +31,36 @@ namespace HackChallenge.BLL.Commands
 
             if(user != null && user.isAuthorized)
             {
-                StringBuilder lanDetails = new StringBuilder();
-                lanDetails.Append("<code>lo: flags=73 UP,LOOPBACK,RUNNING  mtu 1500\n" +
-                                  "inet 127.0.0.1  netmask 255.0.0.0\n" +
-                                  "inet6::1  prefixlen 128  scopeid 0xfe  compat, link, site, host \n" +
-                                  "loop(Local Loopback) </code>");
+                LinuxSystem linuxSystem = await _unitOfWork.LinuxRepository.GetByIdAsync(user.Id);
+                if (linuxSystem != null)
+                {
+                    WifiModule wifiModule = await _unitOfWork.WifiModuleRepository.GetByIdAsync(linuxSystem.WifiModuleId);
 
-                await client.SendTextMessageAsync(chatId, lanDetails.ToString(), ParseMode.Html);
-                lanDetails.Clear();
+                    if (wifiModule != null)
+                    {
+                        StringBuilder lanDetails = new StringBuilder();
+                        lanDetails.Append("<code>lo: flags=73 UP,LOOPBACK,RUNNING  mtu 1500\n" +
+                                          "inet 127.0.0.1  netmask 255.0.0.0\n" +
+                                          "inet6::1  prefixlen 128  scopeid 0xfe  compat, link, site, host \n" +
+                                          "loop(Local Loopback) </code>");
 
-                WifiModule wifiModule = await _unitOfWork.WifiModuleRepository.GetWifiModuleByLinuxSystemIdAsync(user.LinuxSystem.Id); 
+                        await client.SendTextMessageAsync(chatId, lanDetails.ToString(), ParseMode.Html);
+                        lanDetails.Clear();
 
-                lanDetails.Append($"<code>{wifiModule.Name}: flags=4163 UP,BROADCAST,RUNNING,MULTICAST  mtu 1500\n" +
-                                  "inet 192.168.1.104  netmask 255.255.255.0  broadcast 192.168.1.255\n" +
-                                  "inet6 fe80::bd6d:680a: 8ca8: c15f  prefixlen 64  scopeid 0xfd  compat, link, site, host \n" +
-                                  "ether f8: a2:d6: c8:f7: 4f(Ethernet)\n" +
-                                  $"Mode: {GetWifiMode(wifiModule.ModuleMode)}</code>");
+                        lanDetails.Append($"<code>{wifiModule.Name}: flags=4163 UP,BROADCAST,RUNNING,MULTICAST  mtu 1500\n" +
+                                          "inet 192.168.1.104  netmask 255.255.255.0  broadcast 192.168.1.255\n" +
+                                          "inet6 fe80::bd6d:680a: 8ca8: c15f  prefixlen 64  scopeid 0xfd  compat, link, site, host \n" +
+                                          "ether f8: a2:d6: c8:f7: 4f(Ethernet)\n" +
+                                          $"Mode: {GetWifiMode(wifiModule.ModuleMode)}</code>");
 
-                await client.SendTextMessageAsync(chatId, lanDetails.ToString(), ParseMode.Html);
-                return true;
+                        await client.SendTextMessageAsync(chatId, lanDetails.ToString(), ParseMode.Html);
+                        return true;
+                    }
+
+                    return false;
+                }
+
+                return false;
 
             }
 

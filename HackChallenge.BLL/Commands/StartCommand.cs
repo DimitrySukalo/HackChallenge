@@ -33,6 +33,27 @@ namespace HackChallenge.BLL.Commands
         {
             long chatId = message.Chat.Id;
 
+            CurrentDirectory currentDirectory = new CurrentDirectory()
+            {
+                TimeOfCreating = DateTime.UtcNow,
+                Name = "@root",
+                Files = new List<File>()
+            };
+
+            PreviousDirectory previousDirectory = new PreviousDirectory()
+            {
+                TimeOfCreating = DateTime.UtcNow,
+                Name = "@root",
+                Files = new List<File>()
+            };
+
+            MainDirectory mainDirectory = new MainDirectory()
+            {
+                TimeOfCreating = DateTime.UtcNow,
+                Name = "@root",
+                Files = new List<File>()
+            };
+
             List<Directory> directories = new List<Directory>()
             {
                 new Directory()
@@ -40,83 +61,68 @@ namespace HackChallenge.BLL.Commands
                     Name = "bin",
                     TimeOfCreating = DateTime.UtcNow,
                     Files = new List<File>(),
-                    Directories = new List<Directory>()
+                    Directories = new List<Directory>(),
+                    MainDirectory = mainDirectory,
+                    PreviousDirectory = previousDirectory,
+                    CurrentDirectory = currentDirectory
                 },
                 new Directory()
                 {
                     Name = "Downloads",
                     TimeOfCreating = DateTime.UtcNow,
                     Files = new List<File>(),
-                    Directories = new List<Directory>()
+                    Directories = new List<Directory>(),
+                    MainDirectory = mainDirectory,
+                    PreviousDirectory = previousDirectory,
+                    CurrentDirectory = currentDirectory
                 },
                 new Directory()
                 {
                     Name = "var",
                     TimeOfCreating = DateTime.UtcNow,
                     Files = new List<File>(),
-                    Directories = new List<Directory>()
+                    Directories = new List<Directory>(),
+                    MainDirectory = mainDirectory,
+                    PreviousDirectory = previousDirectory,
+                    CurrentDirectory = currentDirectory
                 },
                 new Directory()
                 {
                     Name = "backups",
                     TimeOfCreating = DateTime.UtcNow,
                     Files = new List<File>(),
-                    Directories = new List<Directory>()
+                    Directories = new List<Directory>(),
+                    MainDirectory = mainDirectory,
+                    PreviousDirectory = previousDirectory,
+                    CurrentDirectory = currentDirectory
                 },
                 new Directory()
                 {
                     Name = "Music",
                     TimeOfCreating = DateTime.UtcNow,
                     Files = new List<File>(),
-                    Directories = new List<Directory>()
+                    Directories = new List<Directory>(),
+                    MainDirectory = mainDirectory,
+                    PreviousDirectory = previousDirectory,
+                    CurrentDirectory = currentDirectory
                 },
                 new Directory()
                 {
                     Name = "Videos",
                     TimeOfCreating = DateTime.UtcNow,
                     Files = new List<File>(),
-                    Directories = new List<Directory>()
+                    Directories = new List<Directory>(),
+                    MainDirectory = mainDirectory,
+                    PreviousDirectory = previousDirectory,
+                    CurrentDirectory = currentDirectory
                 },
                 new Directory()
                 {
                     Name = "Files",
                     TimeOfCreating = DateTime.UtcNow,
-                    Files = new List<File>()
-                    {
-                        new File()
-                        {
-                            TimeOfCreating = DateTime.UtcNow,
-                            Name = "passwords.txt",
-                            Size = new Random().Next(100, 1000),
-                            Text = GetPasswordValues().passwords
-                        }
-                    },
-                    Directories = new List<Directory>()
-                    {
-                        new Directory()
-                        {
-                            Name = "TestDir",
-                            TimeOfCreating = DateTime.UtcNow,
-                            Directories = new List<Directory>()
-                            {
-                                new Directory()
-                                {
-                                    Name = "TestDir2",
-                                    TimeOfCreating = DateTime.UtcNow,
-                                    Files = new List<File>()
-                                    {
-                                        new File()
-                                        {
-                                            Name = "Tests.txt",
-                                            Size = new Random().Next(100, 1000),
-                                            Text = Guid.NewGuid().ToString(),
-                                            TimeOfCreating = DateTime.UtcNow
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    MainDirectory = mainDirectory,
+                    PreviousDirectory = previousDirectory,
+                    CurrentDirectory = currentDirectory
                 },
             };
 
@@ -136,35 +142,18 @@ namespace HackChallenge.BLL.Commands
                         Name = "wlan0",
                         Wifis = GetWifis()
                     },
-                    CurrentDirectory = new CurrentDirectory()
-                    {
-                        Directories = directories,
-                        TimeOfCreating = DateTime.UtcNow,
-                        Name = "@root",
-                        Files = new List<File>()
-                    },
-                    PreviousDirectory = new PreviousDirectory()
-                    {
-                        Directories = directories,
-                        TimeOfCreating = DateTime.UtcNow,
-                        Name = "@root",
-                        Files = new List<File>()
-                    },
-                    MainDirectory = new MainDirectory()
-                    {
-                        Directories = directories,
-                        TimeOfCreating = DateTime.UtcNow,
-                        Name = "@root",
-                        Files = new List<File>()
-                    },
+                    MainDirectory = mainDirectory,
+                    PreviousDirectory = previousDirectory,
+                    CurrentDirectory = currentDirectory,
                     AllDirectories = directories
-                }
+                },
+                CountOfCrackWifi = 0
             };
 
 
 
-            bool isExist = _unitOfWork.ApplicationContext.Users.Any(u => u.ChatId == chatId);
-            if(!isExist)
+            User tempUser = await _unitOfWork.UserAccessRepository.GetUserByChatId(chatId);
+            if(tempUser == null)
             {
                 await _unitOfWork.UserAccessRepository.AddAsync(user);
                 await client.SendTextMessageAsync(chatId, "<code>Спасибо за регистрацию! Теперь мы можем начать ✅</code>", ParseMode.Html);

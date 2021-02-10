@@ -1,6 +1,9 @@
 ﻿using HackChallenge.BLL.CommandDIInterfaces;
+using HackChallenge.DAL.Entities;
 using HackChallenge.DAL.Interfaces;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +11,8 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using User = HackChallenge.DAL.Entities.User;
+using File = HackChallenge.DAL.Entities.File;
+using System.Linq;
 
 namespace HackChallenge.BLL.Commands
 {
@@ -31,9 +36,16 @@ namespace HackChallenge.BLL.Commands
             if (user.isAuthorized)
             {
                 StringBuilder dirs = new StringBuilder();
+                LinuxSystem linuxSystem = await _unitOfWork.LinuxRepository.GetByIdAsync(user.Id);
+                CurrentDirectory currentDirectory = await _unitOfWork.CurrentDirectoryRepository.GetByIdAsync(linuxSystem.CurrentDirId);
 
-                if (user.LinuxSystem.CurrentDirectory.Directories.Count == 0 &&
-                    user.LinuxSystem.CurrentDirectory.Files.Count == 0)
+                IEnumerable<Directory> directories = _unitOfWork.DirectoryRepository
+                                                            .GetDirectoriesOfCurrentDirectory(currentDirectory.Id);
+
+                IEnumerable<File> files = _unitOfWork.FileRepository.GetFilesByCurrentDirId(currentDirectory.Id);
+
+                if (directories.Count() == 0 &&
+                    files.Count() == 0)
                 {
                     dirs.Append("<code>Папка пустая</code>");
                     await client.SendTextMessageAsync(message.Chat.Id, dirs.ToString(), ParseMode.Html);
@@ -42,12 +54,12 @@ namespace HackChallenge.BLL.Commands
                 }
                 if (message.Text == Name)
                 {
-                    foreach (var dir in user.LinuxSystem.CurrentDirectory.Directories)
+                    foreach (var dir in directories)
                     {
                         dirs.Append($"<code>{dir.Name}</code>\n");
                     }
 
-                    foreach (var file in user.LinuxSystem.CurrentDirectory.Files)
+                    foreach (var file in files)
                     {
                         dirs.Append($"<code>{file.Name}</code>\n");
                     }
@@ -60,11 +72,13 @@ namespace HackChallenge.BLL.Commands
                     string[] showDirsParams = message.Text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                     if (showDirsParams[0] == Name && showDirsParams[1] == "-la")
                     {
-                        foreach (var dir in user.LinuxSystem.CurrentDirectory.Directories)
+                        List<int> ids = directories.Select(d => d.Id).ToList();
+                        Dictionary<int, List<File>> dirFiles = _unitOfWork.FileRepository.GetFilesOfSomeDirs(ids);
+                        foreach (var dir in directories)
                         {
-                            dirs.Append($"<code>{dir.GetSizeOfDir()}\t{dir.TimeOfCreating.ToString("MMM", CultureInfo.InvariantCulture)}\t{dir.TimeOfCreating.Day}\t{dir.Name}</code>\n");
+                            dirs.Append($"<code>{dir.GetSizeOfDir(dirFiles[dir.Id])}\t{dir.TimeOfCreating.ToString("MMM", CultureInfo.InvariantCulture)}\t{dir.TimeOfCreating.Day}\t{dir.Name}</code>\n");
                         }
-                        foreach(var file in user.LinuxSystem.CurrentDirectory.Files)
+                        foreach(var file in files)
                         {
                             dirs.Append($"<code>{file.Size}\t{file.TimeOfCreating.ToString("MMM", CultureInfo.InvariantCulture)}\t{file.TimeOfCreating.Day}\t{file.Name}</code>\n");
                         }

@@ -1,4 +1,5 @@
 ﻿using HackChallenge.BLL.CommandDIInterfaces;
+using HackChallenge.DAL.Entities;
 using HackChallenge.DAL.Interfaces;
 using System;
 using System.Threading.Tasks;
@@ -30,10 +31,22 @@ namespace HackChallenge.BLL.Commands
 
             if (user != null && user.isAuthorized)
             {
-                string pathName = user.LinuxSystem.CurrentDirectory.Name;
-                await client.SendTextMessageAsync(chatId, $"<code>{pathName}</code>", ParseMode.Html);
+                LinuxSystem linuxSystem = await _unitOfWork.LinuxRepository.GetByIdAsync(user.Id);
+                if (linuxSystem != null)
+                {
+                    CurrentDirectory currentDirectory = await _unitOfWork.CurrentDirectoryRepository.GetByIdAsync(linuxSystem.CurrentDirId);
+                    if (currentDirectory != null)
+                    {
+                        string pathName = currentDirectory.Name;
+                        await client.SendTextMessageAsync(chatId, $"<code>{pathName}</code>", ParseMode.Html);
 
-                return true;
+                        return true;
+                    }
+
+                    return false;
+                }
+
+                return false;
             }
 
             return false;

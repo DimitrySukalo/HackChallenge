@@ -1,10 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace HackChallenge.DAL.Entities
+﻿namespace HackChallenge.DAL.Entities
 {
     public class User
     {
-        [Key]
         public int Id { get; set; }
         public string UserName { get; set; }
         public long ChatId { get; set; }
@@ -15,6 +12,7 @@ namespace HackChallenge.DAL.Entities
         public bool isAuthorized { get; set; }
         public LinuxSystem LinuxSystem { get; set; }
         public bool HaveLinuxPermission { get; set; }
+        public int CountOfCrackWifi { get; set; }
 
         public override string ToString()
         {

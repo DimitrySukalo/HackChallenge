@@ -1,4 +1,5 @@
-﻿using HackChallenge.DAL.Entities;
+﻿using HackChallenge.DAL.DB.Configurations;
+using HackChallenge.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace HackChallenge.DAL.DB
@@ -23,6 +24,19 @@ namespace HackChallenge.DAL.DB
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {
             Database.EnsureCreated();
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new LinuxSystemConfiguration());
+            modelBuilder.ApplyConfiguration(new DirectoryConfigurations());
+            modelBuilder.ApplyConfiguration(new FileConfigurations());
+            modelBuilder.ApplyConfiguration(new MainDirectoryConfigurations());
+            modelBuilder.ApplyConfiguration(new CurrentDirectoryConfigurations());
+            modelBuilder.ApplyConfiguration(new PreviousDirectoryConfigurations());
+            modelBuilder.ApplyConfiguration(new WifiConfigurations());
+            modelBuilder.ApplyConfiguration(new WifiModuleConfigurations());
         }
     }
 }

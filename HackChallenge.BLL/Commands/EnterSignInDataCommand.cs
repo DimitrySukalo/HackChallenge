@@ -40,7 +40,7 @@ namespace HackChallenge.BLL.Commands
                     user.CountOfCorrectUserName = 2;
                     user.CountOfIncorrectLoginData = 2;
                     user.isAuthorized = true;
-                    _unitOfWork.ApplicationContext.Users.Update(user);
+
                     await _unitOfWork.SaveAsync();
 
                     await client.SendTextMessageAsync(chatId, "<code>Поздравляем, с успешным входом в систему!\n Вы не так просты как нам казалось👨🏼‍💻! \nЧто ж, я вижу вы знаете что такое шифрование и надеемся помните самый простой метод. Вот вам от нас сообщение \n" +
@@ -65,7 +65,7 @@ namespace HackChallenge.BLL.Commands
                 else
                 {
                     user.CountOfIncorrectLoginData += 1;
-                    _unitOfWork.ApplicationContext.Users.Update(user);
+
                     await _unitOfWork.SaveAsync();
 
                     if(user.CountOfIncorrectLoginData == 1)

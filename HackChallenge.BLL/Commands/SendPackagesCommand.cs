@@ -9,6 +9,9 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using User = HackChallenge.DAL.Entities.User;
+using File = HackChallenge.DAL.Entities.File;
+using System.Text;
+using System.Collections.Generic;
 
 namespace HackChallenge.BLL.Commands
 {
@@ -30,14 +33,17 @@ namespace HackChallenge.BLL.Commands
         {
             long chatId = message.Chat.Id;
             User user = await _unitOfWork.UserAccessRepository.GetUserByChatId(chatId);
+            LinuxSystem linuxSystem = await _unitOfWork.LinuxRepository.GetByIdAsync(user.Id);
+            WifiModule wifiModule = await _unitOfWork.WifiModuleRepository.GetByIdAsync(linuxSystem.WifiModuleId);
 
-            if(user != null && user.isAuthorized && user.LinuxSystem.WifiModule.ModuleMode == ModuleMode.Monitor)
+            if(user != null && user.isAuthorized && wifiModule.ModuleMode == ModuleMode.Monitor)
             {
                 string[] commandParams = message.Text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                bool isExist = user.LinuxSystem.WifiModule.Wifis.Any(w => w.BSSID == commandParams[3]);
+                IEnumerable<Wifi> wifis = _unitOfWork.WifiRepository.GetByWifisModuleId(wifiModule.Id);
+                bool isExist = wifis.Any(w => w.BSSID == commandParams[3]);
 
                 if(commandParams[1] == "--deauth" && commandParams[2] == "-a" &&
-                   isExist && commandParams[4] == user.LinuxSystem.WifiModule.Name)
+                   isExist && commandParams[4] == wifiModule.Name)
                 {
                     for(int i = 0; i < 8; i++)
                     {
@@ -45,7 +51,38 @@ namespace HackChallenge.BLL.Commands
                         Thread.Sleep(1000);
                     }
 
-                    return true;
+                    user.CountOfCrackWifi++;
+                    await _unitOfWork.SaveAsync();
+
+                    Wifi wifi = wifis.FirstOrDefault(w => w.BSSID == commandParams[3]);
+
+                    if (wifi != null)
+                    {
+                        File file = new File()
+                        {
+                            Name = $"Wifi-Crack{user.CountOfCrackWifi}.cap",
+                            Size = new Random().Next(100, 500),
+                            TimeOfCreating = DateTime.UtcNow,
+                            Text = Convert.ToBase64String(Encoding.UTF8.GetBytes(wifi.Password))
+                        };
+
+                        CurrentDirectory currentDirectory = await _unitOfWork.CurrentDirectoryRepository.GetByIdAsync(linuxSystem.CurrentDirId);
+                        if (currentDirectory != null)
+                        {
+                            List<File> curDirFiles = _unitOfWork.FileRepository.GetFilesByCurrentDirId(currentDirectory.Id).ToList();
+
+                            curDirFiles.Add(file);
+                            await _unitOfWork.SaveAsync();
+
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+
+                    return false;
                 }
                 else
                 {

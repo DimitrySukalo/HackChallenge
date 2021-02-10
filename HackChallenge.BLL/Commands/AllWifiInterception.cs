@@ -2,6 +2,8 @@
 using HackChallenge.DAL.Entities;
 using HackChallenge.DAL.Interfaces;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Telegram.Bot;
@@ -29,17 +31,31 @@ namespace HackChallenge.BLL.Commands
         {
             long chatId = message.Chat.Id;
             User user = await _unitOfWork.UserAccessRepository.GetUserByChatId(chatId);
-            if(user != null  && user.isAuthorized && user.LinuxSystem.WifiModule.ModuleMode == ModuleMode.Monitor)
+            if (user != null)
             {
-                StringBuilder wifis = new StringBuilder();
-                foreach(var wifi in user.LinuxSystem.WifiModule.Wifis)
+                LinuxSystem linuxSystem = await _unitOfWork.LinuxRepository.GetByIdAsync(user.Id);
+                if (linuxSystem != null)
                 {
-                    wifis.Append($"BSSID: {wifi.BSSID}    SPEED: {wifi.Speed}мб/с    CH: {wifi.Channel}    CIP: {GetCipher(wifi.Cipher)}    ENC: {GetEncryption(wifi.EncryptionType)}    ESSID: {wifi.Name}\n");
+                    WifiModule wifiModule = await _unitOfWork.WifiModuleRepository.GetByIdAsync(linuxSystem.WifiModuleId);
+                    if (wifiModule != null && user.isAuthorized && wifiModule.ModuleMode == ModuleMode.Monitor)
+                    {
+                        StringBuilder wifis = new StringBuilder();
+                        List<Wifi> moduleWifis = _unitOfWork.WifiRepository.GetByWifisModuleId(wifiModule.Id).ToList();
+
+                        foreach (var wifi in moduleWifis)
+                        {
+                            wifis.Append($"BSSID: {wifi.BSSID}    SPEED: {wifi.Speed}мб/с    CH: {wifi.Channel}    CIP: {GetCipher(wifi.Cipher)}    ENC: {GetEncryption(wifi.EncryptionType)}    ESSID: {wifi.Name}\n");
+                        }
+
+                        await client.SendTextMessageAsync(chatId, $"<code>{wifis}</code>", ParseMode.Html);
+
+                        return true;
+                    }
+
+                    return false;
                 }
 
-                await client.SendTextMessageAsync(chatId ,$"<code>{wifis}</code>", ParseMode.Html);
-
-                return true;
+                return false;
             }
 
             return false;
