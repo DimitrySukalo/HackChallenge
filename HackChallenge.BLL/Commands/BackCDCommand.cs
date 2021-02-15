@@ -50,21 +50,32 @@ namespace HackChallenge.BLL.Commands
                     List<Directory> directories = GetOfMainDir(mainDirectory).dirs;
                     List<File> files = GetOfMainDir(mainDirectory).files;
 
-                    user.LinuxSystem.PreviousDirectory = new PreviousDirectory()
+                    PreviousDirectory previous = new PreviousDirectory()
                     {
-                        Directories = directories,
-                        Files = files,
                         Name = mainDirectory.Name,
                         TimeOfCreating = mainDirectory.TimeOfCreating
                     };
 
-                    user.LinuxSystem.CurrentDirectory = new CurrentDirectory()
+                    CurrentDirectory current = new CurrentDirectory()
                     {
-                        Directories = directories,
-                        Files = files,
                         Name = mainDirectory.Name,
                         TimeOfCreating = mainDirectory.TimeOfCreating
                     };
+
+                    foreach (var dir in directories)
+                    {
+                        dir.PreviousDirectory = previous;
+                        dir.CurrentDirectory = current;
+                    }
+
+                    foreach(var file in files)
+                    {
+                        file.PreviousDirectory = previous;
+                        file.CurrentDirectory = current;
+                    }
+
+                    user.LinuxSystem.PreviousDirectory = previous;
+                    user.LinuxSystem.CurrentDirectory = current;
 
                     await _unitOfWork.SaveAsync();
                     await client.SendTextMessageAsync(chatId, "<code>Папка изменена</code>", ParseMode.Html);
@@ -74,15 +85,23 @@ namespace HackChallenge.BLL.Commands
                 List<Directory> dirsOfPrev = _unitOfWork.DirectoryRepository.GetDirsByPrevDirId(previousDirectory.Id).ToList();
                 List<File> filesOfPrevDir = _unitOfWork.FileRepository.GetFilesByPrevDirId(previousDirectory.Id).ToList();
 
-                user.LinuxSystem.CurrentDirectory = new CurrentDirectory()
+                CurrentDirectory currentDirectory = new CurrentDirectory()
                 {
-                    Directories = dirsOfPrev,
-                    Files = filesOfPrevDir,
                     Name = previousDirectory.Name,
                     TimeOfCreating = previousDirectory.TimeOfCreating
                 };
 
-                await _unitOfWork.SaveAsync();
+                foreach(var file in filesOfPrevDir)
+                {
+                    file.CurrentDirectory = currentDirectory;
+                }
+
+                foreach(var dir in dirsOfPrev)
+                {
+                    dir.CurrentDirectory = currentDirectory;
+                }
+
+                user.LinuxSystem.CurrentDirectory = currentDirectory;
 
                 Directory previousDir = null;
                 searchedDir.Remove(searchedDir.Last());
@@ -107,13 +126,23 @@ namespace HackChallenge.BLL.Commands
 
                 if (previousDir != null)
                 {
-                    user.LinuxSystem.PreviousDirectory = new PreviousDirectory()
+                    PreviousDirectory previous = new PreviousDirectory()
                     {
-                        Directories = previousDir.Directories,
-                        Files = previousDir.Files,
                         Name = path,
                         TimeOfCreating = previousDir.TimeOfCreating
                     };
+
+                    foreach(var file in previousDir.Files)
+                    {
+                        file.PreviousDirectory = previous;
+                    }
+
+                    foreach(var dir in previousDir.Directories)
+                    {
+                        dir.PreviousDirectory = previous;
+                    }
+
+                    user.LinuxSystem.PreviousDirectory = previous;
                 }
                 else
                 {
@@ -121,6 +150,22 @@ namespace HackChallenge.BLL.Commands
                     {
                         List<Directory> mainDirs = GetOfMainDir(mainDirectory).dirs;
                         List<File> files = GetOfMainDir(mainDirectory).files;
+
+                        PreviousDirectory previous = new PreviousDirectory()
+                        {
+                            Name = mainDirectory.Name,
+                            TimeOfCreating = mainDirectory.TimeOfCreating
+                        };
+
+                        foreach (var file in files)
+                        {
+                            file.PreviousDirectory = previous;
+                        }
+
+                        foreach (var dir in mainDirs)
+                        {
+                            dir.PreviousDirectory = previous;
+                        }
 
                         user.LinuxSystem.PreviousDirectory = new PreviousDirectory()
                         {

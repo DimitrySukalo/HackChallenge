@@ -55,23 +55,43 @@ namespace HackChallenge.BLL.Commands
                                 List<Directory> directories = _unitOfWork.DirectoryRepository.GetDirectoriesOfCurrentDirectory(currentDirectory.Id).ToList();
                                 List<File> files = _unitOfWork.FileRepository.GetFilesByCurrentDirId(currentDirectory.Id).ToList();
 
-                                user.LinuxSystem.PreviousDirectory = new PreviousDirectory()
+                                PreviousDirectory previousDirectory = new PreviousDirectory()
                                 {
-                                    Directories = directories,
                                     Name = currentDirName,
-                                    Files = files,
                                     TimeOfCreating = currentDirectory.TimeOfCreating
                                 };
 
+                                foreach(var dir in directories)
+                                {
+                                    dir.PreviousDirectory = previousDirectory;
+                                }
+
+                                foreach(var file in files)
+                                {
+                                    file.PreviousDirectory = previousDirectory;
+                                }
+
+                                user.LinuxSystem.PreviousDirectory = previousDirectory;
+
                                 directory = _unitOfWork.DirectoryRepository.GetInDirectory(directory);
 
-                                user.LinuxSystem.CurrentDirectory = new CurrentDirectory()
+                                CurrentDirectory currentDir = new CurrentDirectory()
                                 {
                                     Name = $"{currentDirName}/{directory.Name}",
-                                    Directories = directory.Directories,
-                                    Files = directory.Files,
                                     TimeOfCreating = directory.TimeOfCreating
                                 };
+
+                                foreach(var dir in directory.Directories)
+                                {
+                                    dir.CurrentDirectory = currentDir;
+                                }
+
+                                foreach(var file in directory.Files)
+                                {
+                                    file.CurrentDirectory = currentDir;
+                                }
+
+                                user.LinuxSystem.CurrentDirectory = currentDir;
 
                                 await _unitOfWork.SaveAsync();
 
