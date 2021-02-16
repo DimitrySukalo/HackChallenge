@@ -11,11 +11,9 @@ namespace HackChallenge.DAL.Repositories
         private DirectoryRepository directoryRepository;
         private WifiModuleRepository wifiModuleRepository;
         private LinuxRepository linuxRepository;
-        private CurrentDirectoryRepository currentDirectory;
-        private PreviousDirectoryRepository previousDirectory;
         private FileRepository fileRepository;
-        private MainDirectoryRepository mainDirectory;
         private WifiRepository wifiRepository;
+        private CurrentDirectoryRepository currentDirectory;
 
         public ApplicationContext ApplicationContext { get; }
 
@@ -82,39 +80,6 @@ namespace HackChallenge.DAL.Repositories
             }
         }
 
-        public ICurrentDirectoryRepository CurrentDirectoryRepository
-        {
-            get
-            {
-                if (currentDirectory == null)
-                    currentDirectory = new CurrentDirectoryRepository(ApplicationContext);
-
-                return currentDirectory;
-            }
-        }
-
-        public IPreviousDirectoryRepository PreviousDirectoryRepository
-        {
-            get
-            {
-                if (previousDirectory == null)
-                    previousDirectory = new PreviousDirectoryRepository(ApplicationContext);
-
-                return previousDirectory;
-            }
-        }
-
-        public IMainDirectoryRepository MainDirectoryRepository
-        {
-            get
-            {
-                if (mainDirectory == null)
-                    mainDirectory = new MainDirectoryRepository(ApplicationContext);
-
-                return mainDirectory;
-            }
-        }
-
         public IWifiRepository WifiRepository
         {
             get
@@ -123,6 +88,17 @@ namespace HackChallenge.DAL.Repositories
                     wifiRepository = new WifiRepository(ApplicationContext);
 
                 return wifiRepository;
+            }
+        }
+
+        public ICurrentDirectoryRepository CurrentDirectoryRepository
+        {
+            get
+            {
+                if (currentDirectory == null)
+                    currentDirectory = new CurrentDirectoryRepository(ApplicationContext);
+
+                return currentDirectory;
             }
         }
 

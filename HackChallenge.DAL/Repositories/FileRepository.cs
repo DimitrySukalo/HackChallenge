@@ -4,6 +4,7 @@ using HackChallenge.DAL.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace HackChallenge.DAL.Repositories
 {
@@ -16,22 +17,13 @@ namespace HackChallenge.DAL.Repositories
             _db = context ?? throw new ArgumentNullException(nameof(context), " was null.");
         }
 
-        public IEnumerable<File> GetFilesByCurrentDirId(int id)
+        public async Task AddAsync(File file)
         {
-            IEnumerable<File> files = _db.Files.Where(f => f.CurrentDirectoryId == id);
-            return files;
-        }
-
-        public IEnumerable<File> GetFilesByMainDirId(int id)
-        {
-            IEnumerable<File> files = _db.Files.Where(f => f.MainDirectoryId == id);
-            return files;
-        }
-
-        public IEnumerable<File> GetFilesByPrevDirId(int id)
-        {
-            IEnumerable<File> files = _db.Files.Where(f => f.PreviousDirectoryId == id);
-            return files;
+            if(file != null)
+            {
+                await _db.Files.AddAsync(file);
+                await _db.SaveChangesAsync();
+            }
         }
 
         public IEnumerable<File> GetFilesOfDir(int id)

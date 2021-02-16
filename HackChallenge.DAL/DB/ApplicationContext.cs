@@ -14,8 +14,6 @@ namespace HackChallenge.DAL.DB
         public DbSet<Wifi> Wifis { get; set; }
         public DbSet<WifiModule> WifiModules { get; set; }
         public DbSet<CurrentDirectory> CurrentDirectories { get; set; }
-        public DbSet<PreviousDirectory> PreviousDirectories { get; set; }
-        public DbSet<MainDirectory> MainDirectories { get; set; }
 
         public ApplicationContext()
         {
@@ -32,10 +30,8 @@ namespace HackChallenge.DAL.DB
             modelBuilder.ApplyConfiguration(new LinuxSystemConfiguration());
             modelBuilder.ApplyConfiguration(new DirectoryConfigurations());
             modelBuilder.ApplyConfiguration(new FileConfigurations());
-            modelBuilder.ApplyConfiguration(new MainDirectoryConfigurations());
-            modelBuilder.ApplyConfiguration(new CurrentDirectoryConfigurations());
-            modelBuilder.ApplyConfiguration(new PreviousDirectoryConfigurations());
             modelBuilder.ApplyConfiguration(new WifiConfigurations());
+            modelBuilder.ApplyConfiguration(new CurrentDirectoryConfiguration());
             modelBuilder.ApplyConfiguration(new WifiModuleConfigurations());
         }
     }

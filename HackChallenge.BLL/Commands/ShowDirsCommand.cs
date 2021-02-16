@@ -37,12 +37,12 @@ namespace HackChallenge.BLL.Commands
             {
                 StringBuilder dirs = new StringBuilder();
                 LinuxSystem linuxSystem = await _unitOfWork.LinuxRepository.GetByIdAsync(user.Id);
-                CurrentDirectory currentDirectory = await _unitOfWork.CurrentDirectoryRepository.GetByIdAsync(linuxSystem.CurrentDirId);
+                CurrentDirectory currentDirectory = await _unitOfWork.CurrentDirectoryRepository.GetByIdAsync(linuxSystem.CurrentDirectoryId);
+                Directory directory = _unitOfWork.DirectoryRepository.GetInDirectory
+                                                                    (await _unitOfWork.DirectoryRepository.GetByIdAsync(currentDirectory.DirectoryId));
 
-                IEnumerable<Directory> directories = _unitOfWork.DirectoryRepository
-                                                            .GetDirectoriesOfCurrentDirectory(currentDirectory.Id);
-
-                IEnumerable<File> files = _unitOfWork.FileRepository.GetFilesByCurrentDirId(currentDirectory.Id);
+                IEnumerable<Directory> directories = directory.Directories;
+                IEnumerable<File> files = directory.Files;
 
                 if (directories.Count() == 0 &&
                     files.Count() == 0)

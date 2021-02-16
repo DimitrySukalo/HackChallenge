@@ -39,7 +39,11 @@ namespace HackChallenge.BLL.Commands
                     if (!parameters[1].Contains("/"))
                     {
                         string[] fileParams = parameters[1].Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-                        File file = user.LinuxSystem.CurrentDirectory.Files.FirstOrDefault(f => f.Name == parameters[1]);
+                        LinuxSystem linuxSystem = await _unitOfWork.LinuxRepository.GetByIdAsync(user.Id);
+                        CurrentDirectory currentDirectory = await _unitOfWork.CurrentDirectoryRepository.GetByIdAsync(linuxSystem.CurrentDirectoryId);
+                        Directory directory = _unitOfWork.DirectoryRepository.GetInDirectory(await _unitOfWork.DirectoryRepository.GetByIdAsync(currentDirectory.DirectoryId));
+
+                        File file = directory.Files.FirstOrDefault(f => f.Name == parameters[1]);
                         if (fileParams[1] == "cap" && file != null)
                         {
 

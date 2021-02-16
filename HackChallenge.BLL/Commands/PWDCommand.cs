@@ -34,11 +34,11 @@ namespace HackChallenge.BLL.Commands
                 LinuxSystem linuxSystem = await _unitOfWork.LinuxRepository.GetByIdAsync(user.Id);
                 if (linuxSystem != null)
                 {
-                    CurrentDirectory currentDirectory = await _unitOfWork.CurrentDirectoryRepository.GetByIdAsync(linuxSystem.CurrentDirId);
+                    CurrentDirectory currentDirectory = await _unitOfWork.CurrentDirectoryRepository.GetByIdAsync(linuxSystem.CurrentDirectoryId);
                     if (currentDirectory != null)
                     {
-                        string pathName = currentDirectory.Name;
-                        await client.SendTextMessageAsync(chatId, $"<code>{pathName}</code>", ParseMode.Html);
+                        Directory directory = await _unitOfWork.DirectoryRepository.GetByIdAsync(currentDirectory.DirectoryId);
+                        await client.SendTextMessageAsync(chatId, $"<code>{directory.Path}</code>", ParseMode.Html);
 
                         return true;
                     }

@@ -11,15 +11,14 @@ namespace HackChallenge.DAL.Repositories
     {
         ApplicationContext _db;
 
-        public CurrentDirectoryRepository(ApplicationContext context)
+        public CurrentDirectoryRepository(ApplicationContext applicationContext)
         {
-            _db = context ?? throw new ArgumentNullException(nameof(context), " was null.");
+            _db = applicationContext ?? throw new ArgumentNullException(nameof(applicationContext), " was null.");
         }
 
         public async Task<CurrentDirectory> GetByIdAsync(int id)
         {
-            CurrentDirectory currentDirectory = await _db.CurrentDirectories.FirstOrDefaultAsync(d => d.Id == id);
-            return currentDirectory;
+            return await _db.CurrentDirectories.FirstOrDefaultAsync(d => d.Id == id);
         }
     }
 }

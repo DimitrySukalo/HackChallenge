@@ -8,8 +8,7 @@ namespace HackChallenge.DAL.Interfaces
     {
         Directory GetInDirectory(Directory directory);
         IEnumerable<Directory> GetDirectoriesOfCurrentDirectory(int id);
-        IEnumerable<Directory> GetDirsByMainDirId(int id);
-        IEnumerable<Directory> GetDirsByPrevDirId(int id);
         Task<IEnumerable<Directory>> GetDirsOfLinuxSystemId(int id);
+        Task<Directory> GetByPath(string path);
     }
 }

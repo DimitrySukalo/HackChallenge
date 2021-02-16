@@ -45,21 +45,14 @@ namespace HackChallenge.DAL.Repositories
             return directory;
         }
 
+        public async Task<Directory> GetByPath(string path)
+        {
+            return await _db.Directories.FirstOrDefaultAsync(d => d.Path == path);
+        }
+
         public IEnumerable<Directory> GetDirectoriesOfCurrentDirectory(int id)
         {
-            IEnumerable<Directory> directories = _db.Directories.Where(d => d.CurrentDirectoryId == id);
-            return directories;
-        }
-
-        public IEnumerable<Directory> GetDirsByMainDirId(int id)
-        {
-            IEnumerable<Directory> directories = _db.Directories.Where(d => d.MainDirectoryId == id);
-            return directories;
-        }
-
-        public IEnumerable<Directory> GetDirsByPrevDirId(int id)
-        {
-            IEnumerable<Directory> directories = _db.Directories.Where(d => d.PreviousDirectoryId == id);
+            IEnumerable<Directory> directories = _db.Directories.Where(d => d.CurrentDirectory.Id == id);
             return directories;
         }
 

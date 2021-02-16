@@ -33,7 +33,11 @@ namespace HackChallenge.BLL.Commands
             User user = await _unitOfWork.UserAccessRepository.GetUserByChatId(chatId);
             if (user != null && user.isAuthorized)
             {
-                var searchedDir = user.LinuxSystem.CurrentDirectory.Name.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                LinuxSystem linuxSystem = await _unitOfWork.LinuxRepository.GetByIdAsync(user.Id);
+                CurrentDirectory current = await _unitOfWork.CurrentDirectoryRepository.GetByIdAsync(linuxSystem.CurrentDirectoryId);
+                Directory directory = _unitOfWork.DirectoryRepository.GetInDirectory(await _unitOfWork.DirectoryRepository.GetByIdAsync(current.DirectoryId));
+
+                var searchedDir = directory.Path.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries).ToList();
                 searchedDir.Remove(searchedDir.Last());
                 if(searchedDir.Count == 0)
                 {
@@ -41,157 +45,27 @@ namespace HackChallenge.BLL.Commands
                     return true;
                 }
 
-                LinuxSystem linuxSystem = await _unitOfWork.LinuxRepository.GetByIdAsync(user.Id);
-                PreviousDirectory previousDirectory = await _unitOfWork.PreviousDirectoryRepository.GetByIdAsync(linuxSystem.PreviousDirectoryId);
-                MainDirectory mainDirectory = await _unitOfWork.MainDirectoryRepository.GetByIdAsync(linuxSystem.MainDirectoryId);
-
-                if (searchedDir.Last() == mainDirectory.Name)
+                string dirPath = "";
+                foreach(var path in searchedDir)
                 {
-                    List<Directory> directories = GetOfMainDir(mainDirectory).dirs;
-                    List<File> files = GetOfMainDir(mainDirectory).files;
+                    dirPath += path;
+                }
 
-                    PreviousDirectory previous = new PreviousDirectory()
-                    {
-                        Name = mainDirectory.Name,
-                        TimeOfCreating = mainDirectory.TimeOfCreating
-                    };
-
-                    CurrentDirectory current = new CurrentDirectory()
-                    {
-                        Name = mainDirectory.Name,
-                        TimeOfCreating = mainDirectory.TimeOfCreating
-                    };
-
-                    foreach (var dir in directories)
-                    {
-                        dir.PreviousDirectory = previous;
-                        dir.CurrentDirectory = current;
-                    }
-
-                    foreach(var file in files)
-                    {
-                        file.PreviousDirectory = previous;
-                        file.CurrentDirectory = current;
-                    }
-
-                    user.LinuxSystem.PreviousDirectory = previous;
-                    user.LinuxSystem.CurrentDirectory = current;
+                Directory searchedDirectory = await _unitOfWork.DirectoryRepository.GetByPath(dirPath);
+                if(searchedDirectory != null)
+                {
+                    user.LinuxSystem.CurrentDirectory.Directory = searchedDirectory;
 
                     await _unitOfWork.SaveAsync();
                     await client.SendTextMessageAsync(chatId, "<code>Папка изменена</code>", ParseMode.Html);
+
                     return true;
                 }
 
-                List<Directory> dirsOfPrev = _unitOfWork.DirectoryRepository.GetDirsByPrevDirId(previousDirectory.Id).ToList();
-                List<File> filesOfPrevDir = _unitOfWork.FileRepository.GetFilesByPrevDirId(previousDirectory.Id).ToList();
-
-                CurrentDirectory currentDirectory = new CurrentDirectory()
-                {
-                    Name = previousDirectory.Name,
-                    TimeOfCreating = previousDirectory.TimeOfCreating
-                };
-
-                foreach(var file in filesOfPrevDir)
-                {
-                    file.CurrentDirectory = currentDirectory;
-                }
-
-                foreach(var dir in dirsOfPrev)
-                {
-                    dir.CurrentDirectory = currentDirectory;
-                }
-
-                user.LinuxSystem.CurrentDirectory = currentDirectory;
-
-                Directory previousDir = null;
-                searchedDir.Remove(searchedDir.Last());
-                foreach (var dir in user.LinuxSystem.AllDirectories)
-                {
-                    previousDir = FindDir(dir, searchedDir.Last());
-                }
-
-                string path = "";
-                int counter = 0;
-
-                foreach(var dir in searchedDir)
-                {
-                    counter++;
-                    if (counter == searchedDir.Count)
-                    {
-                        path += dir;
-                    }
-
-                    path += $"{dir}/";
-                }
-
-                if (previousDir != null)
-                {
-                    PreviousDirectory previous = new PreviousDirectory()
-                    {
-                        Name = path,
-                        TimeOfCreating = previousDir.TimeOfCreating
-                    };
-
-                    foreach(var file in previousDir.Files)
-                    {
-                        file.PreviousDirectory = previous;
-                    }
-
-                    foreach(var dir in previousDir.Directories)
-                    {
-                        dir.PreviousDirectory = previous;
-                    }
-
-                    user.LinuxSystem.PreviousDirectory = previous;
-                }
-                else
-                {
-                    if(searchedDir.Last() == mainDirectory.Name)
-                    {
-                        List<Directory> mainDirs = GetOfMainDir(mainDirectory).dirs;
-                        List<File> files = GetOfMainDir(mainDirectory).files;
-
-                        PreviousDirectory previous = new PreviousDirectory()
-                        {
-                            Name = mainDirectory.Name,
-                            TimeOfCreating = mainDirectory.TimeOfCreating
-                        };
-
-                        foreach (var file in files)
-                        {
-                            file.PreviousDirectory = previous;
-                        }
-
-                        foreach (var dir in mainDirs)
-                        {
-                            dir.PreviousDirectory = previous;
-                        }
-
-                        user.LinuxSystem.PreviousDirectory = new PreviousDirectory()
-                        {
-                            Directories = mainDirs,
-                            Files = files,
-                            Name = mainDirectory.Name,
-                            TimeOfCreating = mainDirectory.TimeOfCreating
-                        };
-                    }
-                }
-
-                await _unitOfWork.SaveAsync();
-                await client.SendTextMessageAsync(chatId, "<code>Папка изменена</code>", ParseMode.Html);
-
-                return true;
+                return false;
             }
 
             return false;
-        }
-
-        private (List<Directory> dirs, List<File> files) GetOfMainDir(MainDirectory mainDirectory)
-        {
-            List<Directory> directories = _unitOfWork.DirectoryRepository.GetDirsByMainDirId(mainDirectory.Id).ToList();
-            List<File> files = _unitOfWork.FileRepository.GetFilesByMainDirId(mainDirectory.Id).ToList();
-
-            return (directories, files);
         }
 
         private Directory FindDir(Directory directory, string dirName)

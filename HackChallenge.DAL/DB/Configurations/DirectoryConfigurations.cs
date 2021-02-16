@@ -10,22 +10,12 @@ namespace HackChallenge.DAL.DB.Configurations
         {
             builder.HasKey(d => d.Id);
 
-
             builder.HasOne(d => d.CurrentDirectory)
-                   .WithMany(c => c.Directories)
-                   .HasForeignKey(d => d.CurrentDirectoryId);
-
-            builder.HasOne(d => d.PreviousDirectory)
-                   .WithMany(p => p.Directories)
-                   .HasForeignKey(d => d.PreviousDirectoryId);
-
-            builder.HasOne(d => d.MainDirectory)
-                   .WithMany(m => m.Directories)
-                   .HasForeignKey(d => d.MainDirectoryId);
+                   .WithOne(c => c.Directory)
+                   .HasForeignKey<CurrentDirectory>(c => c.DirectoryId);
 
             builder.HasOne(d => d.LinuxSystem)
                    .WithMany(s => s.AllDirectories)
-                   .HasForeignKey(d => d.LinuxSystemId)
                    .OnDelete(DeleteBehavior.Restrict);
         }
     }

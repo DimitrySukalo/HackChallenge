@@ -19,16 +19,11 @@ namespace HackChallenge.DAL.DB.Configurations
                    .HasForeignKey<LinuxSystem>(k => k.WifiModuleId);
 
             builder.HasOne(s => s.CurrentDirectory)
-                   .WithOne(d => d.LinuxSystem)
-                   .HasForeignKey<LinuxSystem>(s => s.CurrentDirId);
+                   .WithOne(c => c.LinuxSystem)
+                   .HasForeignKey<LinuxSystem>(s => s.CurrentDirectoryId);
 
-            builder.HasOne(s => s.PreviousDirectory)
-                   .WithOne(d => d.LinuxSystem)
-                   .HasForeignKey<LinuxSystem>(s => s.PreviousDirectoryId);
-
-            builder.HasOne(s => s.MainDirectory)
-                   .WithOne(d => d.LinuxSystem)
-                   .HasForeignKey<LinuxSystem>(s => s.MainDirectoryId);
+            builder.HasMany(s => s.AllDirectories)
+                   .WithOne(d => d.LinuxSystem);
         }
     }
 }
