@@ -10,5 +10,6 @@ namespace HackChallenge.DAL.Interfaces
         Dictionary<int, List<File>> GetFilesOfSomeDirs(List<int> ids);
 
         Task AddAsync(File file);
+        Task<File> GetByPath(string path);
     }
 }

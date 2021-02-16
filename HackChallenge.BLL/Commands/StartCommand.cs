@@ -170,10 +170,7 @@ namespace HackChallenge.BLL.Commands
             StringBuilder passwordsStr = new StringBuilder();
             foreach(var pass in passwords)
             {
-                foreach(var p in pass.Value)
-                {
-                    passwordsStr.Append($"{p}\n");
-                }
+                passwordsStr.Append($"{pass.Value}\n");
             }
 
             return (passwordsStr.ToString(), randomPass);

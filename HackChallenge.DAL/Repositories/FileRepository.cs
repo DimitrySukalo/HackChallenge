@@ -1,6 +1,7 @@
 ﻿using HackChallenge.DAL.DB;
 using HackChallenge.DAL.Entities;
 using HackChallenge.DAL.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,11 @@ namespace HackChallenge.DAL.Repositories
                 await _db.Files.AddAsync(file);
                 await _db.SaveChangesAsync();
             }
+        }
+
+        public async Task<File> GetByPath(string path)
+        {
+            return await _db.Files.FirstOrDefaultAsync(f => f.Path == path);
         }
 
         public IEnumerable<File> GetFilesOfDir(int id)

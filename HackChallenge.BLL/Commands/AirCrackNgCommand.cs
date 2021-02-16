@@ -9,6 +9,8 @@ using User = HackChallenge.DAL.Entities.User;
 using File = HackChallenge.DAL.Entities.File;
 using HackChallenge.DAL.Entities;
 using System.Linq;
+using System.Collections.Generic;
+using System.Text;
 
 namespace HackChallenge.BLL.Commands
 {
@@ -36,29 +38,76 @@ namespace HackChallenge.BLL.Commands
                 string[] parameters = message.Text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 if(parameters[0] == Name && parameters[2] == "-w")
                 {
+                    LinuxSystem linuxSystem = await _unitOfWork.LinuxRepository.GetByIdAsync(user.Id);
+                    CurrentDirectory currentDirectory = await _unitOfWork.CurrentDirectoryRepository.GetByIdAsync(linuxSystem.CurrentDirectoryId);
+                    Directory directory = _unitOfWork.DirectoryRepository.GetInDirectory(await _unitOfWork.DirectoryRepository.GetByIdAsync(currentDirectory.DirectoryId));
+                    string fileExtension = "";
+                    string fileName = "";
+
                     if (!parameters[1].Contains("/"))
                     {
-                        string[] fileParams = parameters[1].Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-                        LinuxSystem linuxSystem = await _unitOfWork.LinuxRepository.GetByIdAsync(user.Id);
-                        CurrentDirectory currentDirectory = await _unitOfWork.CurrentDirectoryRepository.GetByIdAsync(linuxSystem.CurrentDirectoryId);
-                        Directory directory = _unitOfWork.DirectoryRepository.GetInDirectory(await _unitOfWork.DirectoryRepository.GetByIdAsync(currentDirectory.DirectoryId));
-
-                        File file = directory.Files.FirstOrDefault(f => f.Name == parameters[1]);
-                        if (fileParams[1] == "cap" && file != null)
-                        {
-
-                        }
-                        else
-                        {
-                            await client.SendTextMessageAsync(chatId, "<code>Файл не найден. Перейдите в папку с этим файлом.</code>", ParseMode.Html);
-                            return false;
-                        }
+                        fileExtension = parameters[1].Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries)[1];
+                        fileName = parameters[1];
                     }
                     else
                     {
-                        var filePath = parameters[1].Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries).ToList();
-                        filePath.Remove(filePath.LastOrDefault());
+                        string filePath = parameters[1].Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries).Last();
+                        fileExtension = filePath.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries)[1];
+                        fileName = filePath;
+                    }
+                        
 
+                    File handShakeFile = directory.Files.FirstOrDefault(f => f.Name == parameters[1]);
+                    File passwordFile = null;
+                    if (fileExtension == "cap" && handShakeFile != null)
+                    {
+                        if (parameters[3].Contains("/"))
+                        {
+                            passwordFile = await _unitOfWork.FileRepository.GetByPath(parameters[3]);
+                        }
+                        else
+                        {
+                            passwordFile = directory.Files.FirstOrDefault(f => f.Name == parameters[3]);
+                        }
+
+                        if(passwordFile != null)
+                        {
+                            WifiModule wifiModule = await _unitOfWork.WifiModuleRepository.GetByIdAsync(linuxSystem.WifiModuleId);
+                            IEnumerable<Wifi> wifis = _unitOfWork.WifiRepository.GetByWifisModuleId(wifiModule.Id);
+                            if(wifis.Count() > 0)
+                            {
+                                string password = Encoding.UTF8.GetString(Convert.FromBase64String(handShakeFile.Text));
+                                if (passwordFile.Text.Contains(password))
+                                {
+                                    foreach (var wifi in wifis)
+                                    {
+                                        await client.SendTextMessageAsync(chatId, $"<code>[{DateTime.UtcNow}] Подбор пароля...</code>", ParseMode.Html);
+                                        if (wifi.Password == password)
+                                        {
+                                            linuxSystem.IsConnectedTheInternet = true;
+                                            await client.SendTextMessageAsync(chatId, $"<code>Пароль успешно найден, вы подсойдены к {wifi.Name}\nСкорость: {wifi.Speed}</code>", ParseMode.Html);
+                                            break;
+                                        }
+                                    }
+
+                                    await _unitOfWork.SaveAsync();
+
+                                    return true;
+                                }
+
+                                await client.SendTextMessageAsync(chatId, "<code>Пароль не найдено</code>", ParseMode.Html);
+                            }
+
+                            return false;
+                        }
+
+                        await client.SendTextMessageAsync(chatId, "<code>Файл с паролями не найден. Перейдите в папку с этим файлом или укажите путь.</code>", ParseMode.Html);
+                        return false;
+                    }
+                    else
+                    {
+                        await client.SendTextMessageAsync(chatId, "<code>Файл не найден. Перейдите в папку с этим файлом или укажите путь..</code>", ParseMode.Html);
+                        return false;
                     }
                 }
                 else
