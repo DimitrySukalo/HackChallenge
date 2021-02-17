@@ -54,7 +54,10 @@ namespace HackChallenge.BLL.Commands
 
         public bool IsContains(Message message)
         {
-            return message.Text == Name;
+            if (!string.IsNullOrWhiteSpace(message.Text))
+                return message.Text.Contains(Name);
+
+            return false;
         }
     }
 }

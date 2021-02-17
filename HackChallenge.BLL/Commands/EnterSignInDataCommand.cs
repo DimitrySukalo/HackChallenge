@@ -82,8 +82,11 @@ namespace HackChallenge.BLL.Commands
 
         public bool IsContains(Message message)
         {
-            if (Regex.IsMatch(message.Text, "(.*?):(.*?)") && message.Text.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries).Length == 2)
-                return true;
+            if (!string.IsNullOrWhiteSpace(message.Text))
+            {
+                if (Regex.IsMatch(message.Text, "(.*?):(.*?)") && message.Text.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries).Length == 2)
+                    return true;
+            }
 
             return false;
         }

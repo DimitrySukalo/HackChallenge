@@ -2,6 +2,7 @@
 using System;
 using Telegram.Bot;
 using Telegram.Bot.Args;
+using Telegram.Bot.Types.Enums;
 
 namespace HackChallenge.Controllers
 {
@@ -27,15 +28,22 @@ namespace HackChallenge.Controllers
 
         private async void ClientOnMessage(object sender, MessageEventArgs e)
         {
-            var message = e.Message;
-            var commands = _bot.Commands;
-
-            foreach (var command in commands)
+            if (e.Message.Type == MessageType.Text)
             {
-                if (command.IsContains(message))
+                var message = e.Message;
+                var commands = _bot.Commands;
+                bool result = false;
+
+                foreach (var command in commands)
                 {
-                    await command.Execute(message, _client);
+                    if (command.IsContains(message))
+                    {
+                        result = await command.Execute(message, _client);
+                    }
                 }
+
+                if (!result)
+                    await _client.SendTextMessageAsync(e.Message.Chat.Id, "<code>Неизвестная команда</code>", ParseMode.Html);
             }
         }
     }
