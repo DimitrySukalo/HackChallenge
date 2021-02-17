@@ -85,10 +85,13 @@ namespace HackChallenge.BLL.Commands
                                         if (wifi.Password == password)
                                         {
                                             linuxSystem.IsConnectedTheInternet = true;
-                                            await client.SendTextMessageAsync(chatId, $"<code>Пароль успешно найден, вы подсойдены к {wifi.Name}\nСкорость: {wifi.Speed}</code>", ParseMode.Html);
+                                            await client.SendTextMessageAsync(chatId, $"<code>Пароль успешно найден, вы подсойдены к {wifi.Name}\nСкорость: {wifi.Speed}мб/с</code>", ParseMode.Html);
                                             break;
                                         }
                                     }
+
+                                    wifiModule.ModuleMode = ModuleMode.Managed;
+                                    wifiModule.Name = "wlan0";
 
                                     await _unitOfWork.SaveAsync();
 

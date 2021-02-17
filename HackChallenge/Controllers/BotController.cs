@@ -38,7 +38,8 @@ namespace HackChallenge.Controllers
                 {
                     if (command.IsContains(message))
                     {
-                        result = await command.Execute(message, _client);
+                        await command.Execute(message, _client);
+                        result = true;
                     }
                 }
 
