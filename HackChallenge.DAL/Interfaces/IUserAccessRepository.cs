@@ -8,6 +8,7 @@ namespace HackChallenge.DAL.Interfaces
     {
         Task<User> GetUserByChatId(long chatId);
         Task AddRange(List<User> users);
+        Task<List<User>> GetUsersByGlobalNetworkId(int id);
     }
 
 }

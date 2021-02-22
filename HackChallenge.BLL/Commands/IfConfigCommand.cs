@@ -48,9 +48,9 @@ namespace HackChallenge.BLL.Commands
                         lanDetails.Clear();
 
                         lanDetails.Append($"<code>{wifiModule.Name}: flags=4163 UP,BROADCAST,RUNNING,MULTICAST  mtu 1500\n" +
-                                          "inet 192.168.1.104  netmask 255.255.255.0  broadcast 192.168.1.255\n" +
+                                          $"inet {linuxSystem.IP}  netmask 255.255.255.0  broadcast {linuxSystem.IP}\n" +
                                           "inet6 fe80::bd6d:680a: 8ca8: c15f  prefixlen 64  scopeid 0xfd  compat, link, site, host \n" +
-                                          "ether f8: a2:d6: c8:f7: 4f(Ethernet)\n" +
+                                          $"ether {linuxSystem.MACAddress}(Ethernet)\n" +
                                           $"Mode: {GetWifiMode(wifiModule.ModuleMode)}</code>");
 
                         await client.SendTextMessageAsync(chatId, lanDetails.ToString(), ParseMode.Html);

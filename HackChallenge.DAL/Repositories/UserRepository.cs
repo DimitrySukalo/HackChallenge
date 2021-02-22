@@ -4,6 +4,7 @@ using HackChallenge.DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace HackChallenge.DAL.Repositories
@@ -55,6 +56,11 @@ namespace HackChallenge.DAL.Repositories
         {
             User user = await _db.Users.FirstOrDefaultAsync(u => u.ChatId == chatId);
             return user;
+        }
+
+        public async Task<List<User>> GetUsersByGlobalNetworkId(int id)
+        {
+            return await _db.Users.Where(u => u.GlobalNetworkId == id).ToListAsync();
         }
 
         public User Remove(User entity)

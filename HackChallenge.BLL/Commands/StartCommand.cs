@@ -31,20 +31,21 @@ namespace HackChallenge.BLL.Commands
         public async Task<bool> Execute(Message message, TelegramBotClient client)
         {
             long chatId = message.Chat.Id;
+            string IP = GetRandIP();
 
             List<Directory> realUserDirs = GetDirectories();
             realUserDirs.Add(
                 new Directory()
                 {
                     Name = "Files",
-                    Path = "@root/Files",
+                    Path = $"{IP}@root/Files",
                     TimeOfCreating = DateTime.UtcNow,
                     Files = new List<File>()
                     {
                         new File()
                         {
                             Name = "passwords.txt",
-                            Path = "@root/Files/passwords.txt",
+                            Path = $"{IP}@root/Files/passwords.txt",
                             TimeOfCreating = DateTime.UtcNow,
                             Size = new Random().Next(60,700),
                             Text = GetPasswordValues().passwords
@@ -79,12 +80,12 @@ namespace HackChallenge.BLL.Commands
                             Directories = realUserDirs,
                             Files = new List<File>(),
                             TimeOfCreating = DateTime.UtcNow,
-                            Path = "@root",
-                            Name = "@root"
+                            Path = $"{IP}@root",
+                            Name = $"{IP}@root"
                         }
                     },
                     MACAddress = GetRandomBSSID(),
-                    IP = GetRandIP()
+                    IP = IP
                 },
                 CountOfCrackWifi = 0,
                 GlobalNetwork = new GlobalNetwork()

@@ -33,6 +33,7 @@ namespace HackChallenge
             services.AddTransient<IBackCDCommand, BackCDCommand>();
             services.AddTransient<IPWDCommand, PWDCommand>();
             services.AddTransient<IAirCrackNgCommand, AirCrackNgCommand>();
+            services.AddTransient<INetDiscoverCommand, NetDiscoverCommand>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<Bot>();
 
