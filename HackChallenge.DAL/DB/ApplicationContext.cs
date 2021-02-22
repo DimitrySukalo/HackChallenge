@@ -14,6 +14,7 @@ namespace HackChallenge.DAL.DB
         public DbSet<Wifi> Wifis { get; set; }
         public DbSet<WifiModule> WifiModules { get; set; }
         public DbSet<CurrentDirectory> CurrentDirectories { get; set; }
+        public DbSet<GlobalNetwork> GlobalNetworks { get; set; }
 
         public ApplicationContext()
         {

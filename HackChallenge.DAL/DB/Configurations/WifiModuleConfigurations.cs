@@ -15,8 +15,7 @@ namespace HackChallenge.DAL.DB.Configurations
                    .HasForeignKey<LinuxSystem>(s => s.WifiModuleId);
 
             builder.HasMany(m => m.Wifis)
-                   .WithOne(m => m.WifiModule)
-                   .HasForeignKey(w => w.WifiModuleId);
+                   .WithMany(w => w.WifiModules);
         }
     }
 }

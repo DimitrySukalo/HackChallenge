@@ -10,9 +10,12 @@ namespace HackChallenge.DAL.DB.Configurations
         {
             builder.HasKey(w => w.Id);
 
-            builder.HasOne(w => w.WifiModule)
-                   .WithMany(m => m.Wifis)
-                   .HasForeignKey(w => w.WifiModuleId);
+            builder.HasMany(w => w.WifiModules)
+                   .WithMany(m => m.Wifis);
+
+            builder.HasOne(w => w.GlobalNetwork)
+                   .WithOne(n => n.Wifi)
+                   .HasForeignKey<Wifi>(n => n.GlobalNetworkId);
         }
     }
 }

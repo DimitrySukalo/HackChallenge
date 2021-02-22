@@ -14,6 +14,7 @@ namespace HackChallenge.DAL.Repositories
         private FileRepository fileRepository;
         private WifiRepository wifiRepository;
         private CurrentDirectoryRepository currentDirectory;
+        private GlobalNetworkRepository globalNetwork;
 
         public ApplicationContext ApplicationContext { get; }
 
@@ -99,6 +100,17 @@ namespace HackChallenge.DAL.Repositories
                     currentDirectory = new CurrentDirectoryRepository(ApplicationContext);
 
                 return currentDirectory;
+            }
+        }
+
+        public IGlobalNetworkRepository GlobalNetworkRepository
+        {
+            get
+            {
+                if (globalNetwork == null)
+                    globalNetwork = new GlobalNetworkRepository(ApplicationContext);
+
+                return globalNetwork;
             }
         }
 

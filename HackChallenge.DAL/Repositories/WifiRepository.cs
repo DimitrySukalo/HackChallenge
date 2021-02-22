@@ -1,6 +1,7 @@
 ﻿using HackChallenge.DAL.DB;
 using HackChallenge.DAL.Entities;
 using HackChallenge.DAL.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,14 @@ namespace HackChallenge.DAL.Repositories
         /// <returns></returns>
         public IEnumerable<Wifi> GetByWifisModuleId(int id)
         {
-            IEnumerable<Wifi> wifis = _db.Wifis.Where(w => w.WifiModuleId == id);
+            IEnumerable<WifiModule> modules = _db.WifiModules.Include(w => w.Wifis).Where(m => m.Id == id);
+            List<Wifi> wifis = new List<Wifi>();
+
+            foreach(var module in modules)
+            {
+                wifis.AddRange(module.Wifis);
+            }
+
             return wifis;
         }
     }

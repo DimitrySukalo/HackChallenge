@@ -30,6 +30,15 @@ namespace HackChallenge.DAL.Repositories
             return null;
         }
 
+        public async Task AddRange(List<User> users)
+        {
+            if(users != null)
+            {
+                await _db.Users.AddRangeAsync(users);
+                await _db.SaveChangesAsync();
+            }
+        }
+
         public IEnumerable<User> GetAll()
         {
             IEnumerable<User> users = _db.Users;

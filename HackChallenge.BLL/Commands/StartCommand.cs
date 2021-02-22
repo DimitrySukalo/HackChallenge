@@ -10,6 +10,7 @@ using User = HackChallenge.DAL.Entities.User;
 using File = HackChallenge.DAL.Entities.File;
 using Telegram.Bot.Types.Enums;
 using System.Text;
+using System.Linq;
 
 namespace HackChallenge.BLL.Commands
 {
@@ -31,6 +32,144 @@ namespace HackChallenge.BLL.Commands
         {
             long chatId = message.Chat.Id;
 
+            List<Directory> realUserDirs = GetDirectories();
+            realUserDirs.Add(
+                new Directory()
+                {
+                    Name = "Files",
+                    Path = "@root/Files",
+                    TimeOfCreating = DateTime.UtcNow,
+                    Files = new List<File>()
+                    {
+                        new File()
+                        {
+                            Name = "passwords.txt",
+                            Path = "@root/Files/passwords.txt",
+                            TimeOfCreating = DateTime.UtcNow,
+                            Size = new Random().Next(60,700),
+                            Text = GetPasswordValues().passwords
+                        }
+                    }
+                });
+
+
+            ICollection<Wifi> wifis = GetWifis();
+
+            User user = new User()
+            {
+                ChatId = chatId,
+                FirstName = message.From.FirstName,
+                UserName = message.From.Username,
+                LastName = message.From.LastName,
+                HaveLinuxPermission = false,
+                LinuxSystem = new LinuxSystem()
+                {
+                    IsConnectedTheInternet = false,
+                    WifiModule = new WifiModule()
+                    {
+                        ModuleMode = ModuleMode.Managed,
+                        Name = "wlan0",
+                        Wifis = wifis
+                    },
+                    AllDirectories = realUserDirs,
+                    CurrentDirectory = new CurrentDirectory()
+                    {
+                        Directory = new Directory()
+                        {
+                            Directories = realUserDirs,
+                            Files = new List<File>(),
+                            TimeOfCreating = DateTime.UtcNow,
+                            Path = "@root",
+                            Name = "@root"
+                        }
+                    },
+                    MACAddress = GetRandomBSSID(),
+                    IP = GetRandIP()
+                },
+                CountOfCrackWifi = 0,
+                GlobalNetwork = new GlobalNetwork()
+            };
+
+            List<User> victims = new List<User>();
+            for(int i = 0; i < 4; i++)
+            {
+                victims.Add(GetVictimUser());
+            }
+
+            int counter = 0;
+            foreach(var victim in victims)
+            {
+                victim.LinuxSystem.WifiModule.Wifis = wifis;
+                victim.GlobalNetwork = wifis.ToList()[counter].GlobalNetwork;
+                counter++;
+            }
+
+
+            User tempUser = await _unitOfWork.UserAccessRepository.GetUserByChatId(chatId);
+            if(tempUser == null)
+            {
+                await _unitOfWork.UserAccessRepository.AddAsync(user);
+                await _unitOfWork.UserAccessRepository.AddRange(victims);
+                await client.SendTextMessageAsync(chatId, "<code>Спасибо за регистрацию! Теперь мы можем начать ✅</code>", ParseMode.Html);
+                await client.SendTextMessageAsync(chatId, "<code>Процесс подготовки...</code>", ParseMode.Html);
+                await client.SendTextMessageAsync(chatId, "<code>Ещё немного...</code>", ParseMode.Html);
+                await client.SendTextMessageAsync(chatId, "<code>Введите логин и пароль в формате login:password 🌐</code>", ParseMode.Html);
+
+                return true;
+            }
+
+            await client.SendTextMessageAsync(chatId, "<code>Вы уже зарегестрированы! ✅</code>", ParseMode.Html);
+            return false;
+        }
+
+        private User GetVictimUser()
+        {
+            List<Directory> artificialUserDirs = GetDirectories();
+            string IP = GetRandIP();
+
+            User victimSystem = new User()
+            {
+                ChatId = 1,
+                FirstName = Guid.NewGuid().ToString(),
+                UserName = Guid.NewGuid().ToString(),
+                LastName = Guid.NewGuid().ToString(),
+                HaveLinuxPermission = true,
+                LinuxSystem = new LinuxSystem()
+                {
+                    IsConnectedTheInternet = true,
+                    WifiModule = new WifiModule()
+                    {
+                        ModuleMode = ModuleMode.Managed,
+                        Name = "wlan0"
+                    },
+                    AllDirectories = artificialUserDirs,
+                    CurrentDirectory = new CurrentDirectory()
+                    {
+                        Directory = new Directory()
+                        {
+                            Directories = artificialUserDirs,
+                            Files = new List<File>(),
+                            TimeOfCreating = DateTime.UtcNow,
+                            Path = $"{IP}@root",
+                            Name = $"{IP}@root"
+                        }
+                    },
+                    MACAddress = GetRandomBSSID(),
+                    IP = IP
+                }
+            };
+
+            return victimSystem;
+        }
+
+        private string GetRandIP()
+        {
+            Random random = new Random();
+            return $"{random.Next(1, 255)}.{random.Next(1, 255)}.{random.Next(1, 255)}.{random.Next(1, 255)}";
+        }
+
+        private List<Directory> GetDirectories()
+        {
             List<Directory> directories = new List<Directory>()
             {
                 new Directory()
@@ -80,74 +219,10 @@ namespace HackChallenge.BLL.Commands
                     TimeOfCreating = DateTime.UtcNow,
                     Files = new List<File>(),
                     Directories = new List<Directory>(),
-                },
-                new Directory()
-                {
-                    Name = "Files",
-                    Path = "@root/Files",
-                    TimeOfCreating = DateTime.UtcNow,
-                    Files = new List<File>()
-                    {
-                        new File()
-                        {
-                            Name = "passwords.txt",
-                            Path = "@root/Files/passwords.txt",
-                            TimeOfCreating = DateTime.UtcNow,
-                            Size = new Random().Next(60,700),
-                            Text = GetPasswordValues().passwords
-                        }
-                    }
-                },
+                }
             };
 
-            User user = new User()
-            {
-                ChatId = chatId,
-                FirstName = message.From.FirstName,
-                UserName = message.From.Username,
-                LastName = message.From.LastName,
-                HaveLinuxPermission = false,
-                LinuxSystem = new LinuxSystem()
-                {
-                    IsConnectedTheInternet = false,
-                    WifiModule = new WifiModule()
-                    {
-                        ModuleMode = ModuleMode.Managed,
-                        Name = "wlan0",
-                        Wifis = GetWifis()
-                    },
-                    AllDirectories = directories,
-                    CurrentDirectory = new CurrentDirectory()
-                    {
-                        Directory = new Directory()
-                        {
-                            Directories = directories,
-                            Files = new List<File>(),
-                            TimeOfCreating = DateTime.UtcNow,
-                            Path = "@root",
-                            Name = "@root"
-                        }
-                    }
-                },
-                CountOfCrackWifi = 0
-            };
-
-
-
-            User tempUser = await _unitOfWork.UserAccessRepository.GetUserByChatId(chatId);
-            if(tempUser == null)
-            {
-                await _unitOfWork.UserAccessRepository.AddAsync(user);
-                await client.SendTextMessageAsync(chatId, "<code>Спасибо за регистрацию! Теперь мы можем начать ✅</code>", ParseMode.Html);
-                await client.SendTextMessageAsync(chatId, "<code>Процесс подготовки...</code>", ParseMode.Html);
-                await client.SendTextMessageAsync(chatId, "<code>Ещё немного...</code>", ParseMode.Html);
-                await client.SendTextMessageAsync(chatId, "<code>Введите логин и пароль в формате login:password 🌐</code>", ParseMode.Html);
-
-                return true;
-            }
-
-            await client.SendTextMessageAsync(chatId, "<code>Вы уже зарегестрированы! ✅</code>", ParseMode.Html);
-            return false;
+            return directories;
         }
 
         private (string passwords, string password) GetPasswordValues()
@@ -189,7 +264,8 @@ namespace HackChallenge.BLL.Commands
                     Speed = new Random().Next(10, 100),
                     Channel = new Random().Next(1, 10),
                     Cipher = Cipher.CCMP,
-                    EncryptionType = EncryptionType.WPA2
+                    EncryptionType = EncryptionType.WPA2,
+                    GlobalNetwork = new GlobalNetwork()
                 },
                 new Wifi()
                 {
@@ -200,7 +276,8 @@ namespace HackChallenge.BLL.Commands
                     Speed = new Random().Next(10, 100),
                     Channel = new Random().Next(1, 10),
                     Cipher = Cipher.CCMP,
-                    EncryptionType = EncryptionType.WEP
+                    EncryptionType = EncryptionType.WEP,
+                    GlobalNetwork = new GlobalNetwork()
                 },
                 new Wifi()
                 {
@@ -211,7 +288,8 @@ namespace HackChallenge.BLL.Commands
                     Speed = new Random().Next(10, 100),
                     Channel = new Random().Next(1, 10),
                     Cipher = Cipher.TKIP,
-                    EncryptionType = EncryptionType.WPA2
+                    EncryptionType = EncryptionType.WPA2,
+                    GlobalNetwork = new GlobalNetwork()
                 },
                 new Wifi()
                 {
@@ -222,7 +300,8 @@ namespace HackChallenge.BLL.Commands
                     Speed = new Random().Next(10, 100),
                     Channel = new Random().Next(1, 10),
                     Cipher = Cipher.WEP,
-                    EncryptionType = EncryptionType.WPA2
+                    EncryptionType = EncryptionType.WPA2,
+                    GlobalNetwork = new GlobalNetwork()
                 }
             };
         }

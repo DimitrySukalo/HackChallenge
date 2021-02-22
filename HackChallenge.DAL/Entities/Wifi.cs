@@ -1,4 +1,6 @@
-﻿namespace HackChallenge.DAL.Entities
+﻿using System.Collections.Generic;
+
+namespace HackChallenge.DAL.Entities
 {
     public class Wifi
     {
@@ -12,7 +14,9 @@
         public QualityOfSignal QualityOfSignal { get; set; }
         public Cipher Cipher { get; set; }
         
-        public int WifiModuleId { get; set; }
-        public WifiModule WifiModule { get; set; }
+        public virtual  ICollection<WifiModule> WifiModules { get; set; }
+
+        public int GlobalNetworkId { get; set; }
+        public GlobalNetwork GlobalNetwork { get; set; }
     }
 }

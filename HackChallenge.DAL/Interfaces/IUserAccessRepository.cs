@@ -1,4 +1,5 @@
 ﻿using HackChallenge.DAL.Entities;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HackChallenge.DAL.Interfaces
@@ -6,7 +7,7 @@ namespace HackChallenge.DAL.Interfaces
     public interface IUserAccessRepository : IRepository<User, int>
     {
         Task<User> GetUserByChatId(long chatId);
-
+        Task AddRange(List<User> users);
     }
 
 }

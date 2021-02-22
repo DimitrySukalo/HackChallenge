@@ -14,6 +14,9 @@
         public bool HaveLinuxPermission { get; set; }
         public int CountOfCrackWifi { get; set; }
 
+        public int GlobalNetworkId { get; set; }
+        public GlobalNetwork GlobalNetwork { get; set; }
+
         public override string ToString()
         {
             return UserName;

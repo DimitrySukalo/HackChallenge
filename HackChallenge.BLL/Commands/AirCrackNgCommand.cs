@@ -74,28 +74,46 @@ namespace HackChallenge.BLL.Commands
                         {
                             WifiModule wifiModule = await _unitOfWork.WifiModuleRepository.GetByIdAsync(linuxSystem.WifiModuleId);
                             IEnumerable<Wifi> wifis = _unitOfWork.WifiRepository.GetByWifisModuleId(wifiModule.Id);
+
                             if(wifis.Count() > 0)
                             {
                                 string password = Encoding.UTF8.GetString(Convert.FromBase64String(handShakeFile.Text));
                                 if (passwordFile.Text.Contains(password))
                                 {
+                                    Wifi attackWifi = null;
                                     foreach (var wifi in wifis)
                                     {
                                         await client.SendTextMessageAsync(chatId, $"<code>[{DateTime.UtcNow}] Подбор пароля...</code>", ParseMode.Html);
                                         if (wifi.Password == password)
                                         {
-                                            linuxSystem.IsConnectedTheInternet = true;
-                                            await client.SendTextMessageAsync(chatId, $"<code>Пароль успешно найден, вы подсойдены к {wifi.Name}\nСкорость: {wifi.Speed}мб/с</code>", ParseMode.Html);
+                                            attackWifi = wifi;
                                             break;
                                         }
                                     }
 
-                                    wifiModule.ModuleMode = ModuleMode.Managed;
-                                    wifiModule.Name = "wlan0";
+                                    if (attackWifi != null)
+                                    {
+                                        linuxSystem.IsConnectedTheInternet = true;
+                                        GlobalNetwork globalNetwork = await _unitOfWork.GlobalNetworkRepository.GetByIdAsync(attackWifi.GlobalNetworkId);
 
-                                    await _unitOfWork.SaveAsync();
+                                        if (globalNetwork != null)
+                                        {
+                                            user.GlobalNetwork = globalNetwork;
+                                            await client.SendTextMessageAsync(chatId, $"<code>Пароль успешно найден, вы подсойдены к {attackWifi.Name}\nСкорость: {attackWifi.Speed}мб/с</code>", ParseMode.Html);
 
-                                    return true;
+                                            wifiModule.ModuleMode = ModuleMode.Managed;
+                                            wifiModule.Name = "wlan0";
+
+                                            await _unitOfWork.SaveAsync();
+
+                                            return true;
+                                        }
+                                        else
+                                        {
+                                            await client.SendTextMessageAsync(chatId, $"<code>Ошибка подлючения...</code>", ParseMode.Html);
+                                            return false;
+                                        }
+                                    }
                                 }
 
                                 await client.SendTextMessageAsync(chatId, "<code>Пароль не найдено</code>", ParseMode.Html);

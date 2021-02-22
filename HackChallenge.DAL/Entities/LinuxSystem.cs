@@ -7,6 +7,8 @@ namespace HackChallenge.DAL.Entities
         public int Id { get; set; }
         public User User { get; set; }
         public bool IsConnectedTheInternet { get; set; }
+        public string IP { get; set; }
+        public string MACAddress { get; set; }
         
         public int CurrentDirectoryId { get; set; }
         public CurrentDirectory CurrentDirectory { get; set; }
