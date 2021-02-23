@@ -26,6 +26,7 @@ namespace HackChallenge.BLL.Models
         private readonly IPWDCommand _pWDCommand;
         private readonly IAirCrackNgCommand _airCrackNgCommand;
         private readonly INetDiscoverCommand _netDiscoverCommand;
+        private readonly INmapCommand _nmapCommand;
 
         #endregion
 
@@ -36,7 +37,8 @@ namespace HackChallenge.BLL.Models
                    IIfConfingCommand ifConfingCommand, IMonitorModeCommand monitorModeCommand,
                    IAllWifiInterception allWifiInterception, ISendPackagesCommand sendPackagesCommand,
                    ICDCommand cDCommand, IBackCDCommand backCDCommand, IPWDCommand pWDCommand,
-                   IAirCrackNgCommand airCrackNgCommand, INetDiscoverCommand netDiscover)
+                   IAirCrackNgCommand airCrackNgCommand, INetDiscoverCommand netDiscover,
+                   INmapCommand nmapCommand)
         {
             _startCommand = startCommand ?? throw new ArgumentNullException(nameof(startCommand), " was null");
             _enterSignInDataCommand = enterSignInDataCommand ?? throw new ArgumentNullException(nameof(enterSignInDataCommand), " was null");
@@ -51,6 +53,7 @@ namespace HackChallenge.BLL.Models
             _pWDCommand = pWDCommand ?? throw new ArgumentNullException(nameof(pWDCommand), " was null");
             _airCrackNgCommand = airCrackNgCommand ?? throw new ArgumentNullException(nameof(airCrackNgCommand), " was null");
             _netDiscoverCommand = netDiscover ?? throw new ArgumentNullException(nameof(netDiscover), " was null.");
+            _nmapCommand = nmapCommand ?? throw new ArgumentNullException(nameof(nmapCommand), " was null.");
         }
 
         public TelegramBotClient GetClient()
@@ -72,7 +75,8 @@ namespace HackChallenge.BLL.Models
                 _backCDCommand,
                 _pWDCommand,
                 _airCrackNgCommand,
-                _netDiscoverCommand
+                _netDiscoverCommand,
+                _nmapCommand
             };
 
             _client = new TelegramBotClient(AppConfig.Token);

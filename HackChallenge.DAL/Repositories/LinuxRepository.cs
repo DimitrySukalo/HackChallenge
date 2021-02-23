@@ -21,5 +21,11 @@ namespace HackChallenge.DAL.Repositories
             LinuxSystem linuxSystem = await _db.LinuxSystems.FirstOrDefaultAsync(s => s.Id == id);
             return linuxSystem;
         }
+
+        public async Task<LinuxSystem> GetByIP(string ip)
+        {
+            LinuxSystem linuxSystem = await _db.LinuxSystems.FirstOrDefaultAsync(s => s.IP == ip);
+            return linuxSystem;
+        }
     }
 }

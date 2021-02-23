@@ -16,5 +16,6 @@ namespace HackChallenge.DAL.Entities
         public int WifiModuleId { get; set; }
         public WifiModule WifiModule { get; set; }
         public virtual ICollection<Directory> AllDirectories { get; set; }
+        public virtual ICollection<Vulnerability> Vulnerabilities { get; set; }
     }
 }

@@ -31,9 +31,20 @@ namespace HackChallenge.BLL.Commands
         public async Task<bool> Execute(Message message, TelegramBotClient client)
         {
             long chatId = message.Chat.Id;
+
+            //IP of linux system
             string IP = GetRandIP();
 
+            //Directories of user who want to register
             List<Directory> realUserDirs = GetDirectories();
+
+            foreach (var dir in realUserDirs)
+            {
+                string currentPath = IP + dir.Path;
+                dir.Path = currentPath;
+            }
+
+            //Adding folder with password list to wifi
             realUserDirs.Add(
                 new Directory()
                 {
@@ -53,9 +64,10 @@ namespace HackChallenge.BLL.Commands
                     }
                 });
 
-
+            //Wifis which will be dispayed to user
             ICollection<Wifi> wifis = GetWifis();
 
+            //Creating user which pressed the start button
             User user = new User()
             {
                 ChatId = chatId,
@@ -85,12 +97,29 @@ namespace HackChallenge.BLL.Commands
                         }
                     },
                     MACAddress = GetRandomBSSID(),
-                    IP = IP
+                    IP = IP,
+                    Vulnerabilities = new List<Vulnerability>()
+                    {
+                        new Vulnerability()
+                        {
+                            Ports = new List<Port>()
+                            {
+                                new Port()
+                                {
+                                    Login = Guid.NewGuid().ToString(),
+                                    Password = Guid.NewGuid().ToString(),
+                                    PortState = PortState.Close,
+                                    TypeOfPort = TypeOfPort.SSH
+                                }
+                            }
+                        }
+                    }
                 },
                 CountOfCrackWifi = 0,
                 GlobalNetwork = new GlobalNetwork()
             };
 
+            //Creating list of user's which will be hacked by real user
             List<User> victims = new List<User>();
             for(int i = 0; i < 4; i++)
             {
@@ -105,7 +134,7 @@ namespace HackChallenge.BLL.Commands
                 counter++;
             }
 
-
+            //Checking if user is exist in the database
             User tempUser = await _unitOfWork.UserAccessRepository.GetUserByChatId(chatId);
             if(tempUser == null)
             {
@@ -123,10 +152,19 @@ namespace HackChallenge.BLL.Commands
             return false;
         }
 
+        /// <summary>
+        /// Getting victim users which will be hacked by real user
+        /// </summary>
         private User GetVictimUser()
         {
             List<Directory> artificialUserDirs = GetDirectories();
             string IP = GetRandIP();
+
+            foreach(var dir in artificialUserDirs)
+            {
+                string currentPath = IP + dir.Path;
+                dir.Path = currentPath;
+            }
 
             User victimSystem = new User()
             {
@@ -156,19 +194,43 @@ namespace HackChallenge.BLL.Commands
                         }
                     },
                     MACAddress = GetRandomBSSID(),
-                    IP = IP
+                    IP = IP,
+                    Vulnerabilities = new List<Vulnerability>()
+                    {
+                        new Vulnerability()
+                        {
+                            Ports = new List<Port>()
+                            {
+                                new Port()
+                                {
+                                    Login = "anonim2021",
+                                    Password = "veryhardpassword",
+                                    PortState = PortState.Open,
+                                    TypeOfPort = TypeOfPort.SSH
+                                }
+                            }
+                        }
+                    }
                 }
             };
 
             return victimSystem;
         }
 
+        /// <summary>
+        /// Getting ip address of future linux system
+        /// </summary>
+        /// <returns></returns>
         private string GetRandIP()
         {
             Random random = new Random();
             return $"{random.Next(1, 255)}.{random.Next(1, 255)}.{random.Next(1, 255)}.{random.Next(1, 255)}";
         }
 
+        /// <summary>
+        /// Getting directories of linux system
+        /// </summary>
+        /// <returns></returns>
         private List<Directory> GetDirectories()
         {
             List<Directory> directories = new List<Directory>()

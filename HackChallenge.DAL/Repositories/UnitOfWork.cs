@@ -15,6 +15,7 @@ namespace HackChallenge.DAL.Repositories
         private WifiRepository wifiRepository;
         private CurrentDirectoryRepository currentDirectory;
         private GlobalNetworkRepository globalNetwork;
+        private VulnerabilityRepository vulnerabilityRepository;
 
         public ApplicationContext ApplicationContext { get; }
 
@@ -111,6 +112,17 @@ namespace HackChallenge.DAL.Repositories
                     globalNetwork = new GlobalNetworkRepository(ApplicationContext);
 
                 return globalNetwork;
+            }
+        }
+
+        public IVulnerabilityRepository VulnerabilityRepository
+        {
+            get
+            {
+                if (vulnerabilityRepository == null)
+                    vulnerabilityRepository = new VulnerabilityRepository(ApplicationContext);
+
+                return vulnerabilityRepository;
             }
         }
 

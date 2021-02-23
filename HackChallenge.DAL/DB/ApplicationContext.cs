@@ -15,6 +15,8 @@ namespace HackChallenge.DAL.DB
         public DbSet<WifiModule> WifiModules { get; set; }
         public DbSet<CurrentDirectory> CurrentDirectories { get; set; }
         public DbSet<GlobalNetwork> GlobalNetworks { get; set; }
+        public DbSet<Vulnerability> Vulnerabilities { get; set; }
+        public DbSet<Port> Ports { get; set; }
 
         public ApplicationContext()
         {
@@ -34,6 +36,9 @@ namespace HackChallenge.DAL.DB
             modelBuilder.ApplyConfiguration(new WifiConfigurations());
             modelBuilder.ApplyConfiguration(new CurrentDirectoryConfiguration());
             modelBuilder.ApplyConfiguration(new WifiModuleConfigurations());
+            modelBuilder.ApplyConfiguration(new GlobalNetworkConfiguration());
+            modelBuilder.ApplyConfiguration(new PortConfiguration());
+            modelBuilder.ApplyConfiguration(new VulnerabilityConfiguration());
         }
     }
 }
