@@ -56,7 +56,7 @@ namespace HackChallenge.BLL.Commands
                         new File()
                         {
                             Name = "passwords.txt",
-                            Path = $"{IP}@root/Files/passwords.txt",
+                            Path = $"{IP}@root/Files/wifiPasswords.txt",
                             TimeOfCreating = DateTime.UtcNow,
                             Size = new Random().Next(60,700),
                             Text = GetPasswordValues().passwords

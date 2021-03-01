@@ -52,6 +52,11 @@ namespace HackChallenge.DAL.Repositories
             return user;
         }
 
+        public async Task<User> GetByLinuxSystemIP(string ip)
+        {
+            return await _db.Users.FirstOrDefaultAsync(u => u.LinuxSystem.IP == ip);
+        }
+
         public async Task<User> GetUserByChatId(long chatId)
         {
             User user = await _db.Users.FirstOrDefaultAsync(u => u.ChatId == chatId);
