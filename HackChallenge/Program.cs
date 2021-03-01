@@ -37,6 +37,7 @@ namespace HackChallenge
             services.AddTransient<INmapCommand, NmapCommand>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<ISMTPUserCheckCommand, SMTPUserCheckCommand>();
+            services.AddTransient<IHelpCommand, HelpCommand>();
             services.AddTransient<Bot>();
 
             ServiceProvider = services.BuildServiceProvider();
