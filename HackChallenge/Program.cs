@@ -38,6 +38,7 @@ namespace HackChallenge
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<ISMTPUserCheckCommand, SMTPUserCheckCommand>();
             services.AddTransient<IHelpCommand, HelpCommand>();
+            services.AddTransient<ISSHBruteForceCommand, SSHBruteForceCommand>();
             services.AddTransient<Bot>();
 
             ServiceProvider = services.BuildServiceProvider();

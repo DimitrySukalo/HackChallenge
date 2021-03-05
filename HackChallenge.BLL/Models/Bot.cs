@@ -29,6 +29,7 @@ namespace HackChallenge.BLL.Models
         private readonly INmapCommand _nmapCommand;
         private readonly ISMTPUserCheckCommand _sMTPUserCheckCommand;
         private readonly IHelpCommand _helpCommand;
+        private readonly ISSHBruteForceCommand _sSHBruteForceCommand;
 
         #endregion
 
@@ -41,7 +42,7 @@ namespace HackChallenge.BLL.Models
                    ICDCommand cDCommand, IBackCDCommand backCDCommand, IPWDCommand pWDCommand,
                    IAirCrackNgCommand airCrackNgCommand, INetDiscoverCommand netDiscover,
                    INmapCommand nmapCommand, ISMTPUserCheckCommand sMTPUserCheckCommand,
-                   IHelpCommand helpCommand)
+                   IHelpCommand helpCommand, ISSHBruteForceCommand sSHBruteForceCommand)
         {
             _startCommand = startCommand ?? throw new ArgumentNullException(nameof(startCommand), " was null");
             _enterSignInDataCommand = enterSignInDataCommand ?? throw new ArgumentNullException(nameof(enterSignInDataCommand), " was null");
@@ -59,6 +60,7 @@ namespace HackChallenge.BLL.Models
             _nmapCommand = nmapCommand ?? throw new ArgumentNullException(nameof(nmapCommand), " was null.");
             _sMTPUserCheckCommand = sMTPUserCheckCommand ?? throw new ArgumentNullException(nameof(sMTPUserCheckCommand), " was null.");
             _helpCommand = helpCommand ?? throw new ArgumentNullException(nameof(helpCommand), " was null.");
+            _sSHBruteForceCommand = sSHBruteForceCommand ?? throw new ArgumentNullException(nameof(sSHBruteForceCommand), " was null.");
         }
 
         public TelegramBotClient GetClient()
@@ -83,7 +85,8 @@ namespace HackChallenge.BLL.Models
                 _netDiscoverCommand,
                 _nmapCommand,
                 _sMTPUserCheckCommand,
-                _helpCommand
+                _helpCommand,
+                _sSHBruteForceCommand
             };
 
             _client = new TelegramBotClient(AppConfig.Token);

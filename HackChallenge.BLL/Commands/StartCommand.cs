@@ -55,11 +55,19 @@ namespace HackChallenge.BLL.Commands
                     {
                         new File()
                         {
-                            Name = "passwords.txt",
+                            Name = "wifiPasswords.txt",
                             Path = $"{IP}@root/Files/wifiPasswords.txt",
                             TimeOfCreating = DateTime.UtcNow,
                             Size = new Random().Next(60,700),
                             Text = GetPasswordValues().passwords
+                        },
+                        new File()
+                        {
+                            Name = "sshPass.txt",
+                            Path = $"{IP}@root/Files/sshPass.txt",
+                            TimeOfCreating = DateTime.UtcNow,
+                            Size = new Random().Next(60,700),
+                            Text = GetSshPasswordData().allPasswordsSsh 
                         }
                     }
                 });
@@ -166,11 +174,13 @@ namespace HackChallenge.BLL.Commands
                 dir.Path = currentPath;
             }
 
+            string name = Guid.NewGuid().ToString();
+
             User victimSystem = new User()
             {
                 ChatId = 1,
                 FirstName = Guid.NewGuid().ToString(),
-                UserName = Guid.NewGuid().ToString(),
+                UserName = name,
                 LastName = Guid.NewGuid().ToString(),
                 HaveLinuxPermission = true,
                 LinuxSystem = new LinuxSystem()
@@ -203,8 +213,8 @@ namespace HackChallenge.BLL.Commands
                             {
                                 new Port()
                                 {
-                                    Login = "anonim2021",
-                                    Password = "veryhardpassword",
+                                    Login = name,
+                                    Password = GetSshPasswordData().passwordSsh,
                                     PortState = PortState.Open,
                                     TypeOfPort = TypeOfPort.SSH
                                 }
@@ -215,6 +225,37 @@ namespace HackChallenge.BLL.Commands
             };
 
             return victimSystem;
+        }
+
+        private (string passwordSsh, string allPasswordsSsh) GetSshPasswordData()
+        {
+            Dictionary<int, string> passwords = new Dictionary<int, string>()
+            {
+                { 1, "root"},
+                { 2, "toor"},
+                { 3, "raspberry"},
+                { 4, "dietpi"},
+                { 5, "test"},
+                { 6, "uploader"},
+                { 7, "password"},
+                { 8, "admin"},
+                { 9, "administrator"},
+                { 10, "marketing"},
+                { 11, "12345678"},
+                { 12, "1234"},
+                { 13, "12345"},
+                { 14, "qwerty"}
+            };
+
+            string randomSshPass = passwords[new Random().Next(1, 14)];
+            StringBuilder pass = new StringBuilder();
+
+            foreach(var password in passwords.Values)
+            {
+                pass.Append($"{password}\n");
+            }
+
+            return (randomSshPass, pass.ToString());
         }
 
         /// <summary>

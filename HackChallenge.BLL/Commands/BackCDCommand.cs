@@ -2,13 +2,11 @@
 using HackChallenge.DAL.Entities;
 using HackChallenge.DAL.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using File = HackChallenge.DAL.Entities.File;
 using User = HackChallenge.DAL.Entities.User;
 
 namespace HackChallenge.BLL.Commands
