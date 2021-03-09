@@ -65,6 +65,11 @@ namespace HackChallenge.BLL.Commands
                                                         await client.SendTextMessageAsync(chatId, $"<code>[22][ssh]  host: {sshParams[1]}   login: {port.Login}   password: {port.Password}</code>", ParseMode.Html);
                                                         return true;
                                                     }
+                                                    else
+                                                    {
+                                                        await client.SendTextMessageAsync(chatId, "<code>Пароль не найден.</code>", ParseMode.Html);
+                                                        return false;
+                                                    }
                                                 }
                                             }
                                         }

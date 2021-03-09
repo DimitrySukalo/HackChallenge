@@ -30,6 +30,7 @@ namespace HackChallenge.BLL.Models
         private readonly ISMTPUserCheckCommand _sMTPUserCheckCommand;
         private readonly IHelpCommand _helpCommand;
         private readonly ISSHBruteForceCommand _sSHBruteForceCommand;
+        private readonly ISSHConnectCommand _sSHConnectCommand;
 
         #endregion
 
@@ -42,7 +43,8 @@ namespace HackChallenge.BLL.Models
                    ICDCommand cDCommand, IBackCDCommand backCDCommand, IPWDCommand pWDCommand,
                    IAirCrackNgCommand airCrackNgCommand, INetDiscoverCommand netDiscover,
                    INmapCommand nmapCommand, ISMTPUserCheckCommand sMTPUserCheckCommand,
-                   IHelpCommand helpCommand, ISSHBruteForceCommand sSHBruteForceCommand)
+                   IHelpCommand helpCommand, ISSHBruteForceCommand sSHBruteForceCommand,
+                   ISSHConnectCommand sSHConnectCommand)
         {
             _startCommand = startCommand ?? throw new ArgumentNullException(nameof(startCommand), " was null");
             _enterSignInDataCommand = enterSignInDataCommand ?? throw new ArgumentNullException(nameof(enterSignInDataCommand), " was null");
@@ -61,6 +63,7 @@ namespace HackChallenge.BLL.Models
             _sMTPUserCheckCommand = sMTPUserCheckCommand ?? throw new ArgumentNullException(nameof(sMTPUserCheckCommand), " was null.");
             _helpCommand = helpCommand ?? throw new ArgumentNullException(nameof(helpCommand), " was null.");
             _sSHBruteForceCommand = sSHBruteForceCommand ?? throw new ArgumentNullException(nameof(sSHBruteForceCommand), " was null.");
+            _sSHConnectCommand = sSHConnectCommand ?? throw new ArgumentNullException(nameof(sSHConnectCommand), " was null.");
         }
 
         public TelegramBotClient GetClient()
@@ -86,7 +89,8 @@ namespace HackChallenge.BLL.Models
                 _nmapCommand,
                 _sMTPUserCheckCommand,
                 _helpCommand,
-                _sSHBruteForceCommand
+                _sSHBruteForceCommand,
+                _sSHConnectCommand
             };
 
             _client = new TelegramBotClient(AppConfig.Token);
