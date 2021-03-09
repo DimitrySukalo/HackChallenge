@@ -50,7 +50,7 @@ namespace HackChallenge.BLL.Commands
                                     {
                                         if (port.Password == commandParams[2] && port.Login == connectParams[1])
                                         {
-                                            await client.SendTextMessageAsync(chatId, $"<code>Вы подлючены к {victimSystem.IP}</code>", ParseMode.Html);
+                                            await client.SendTextMessageAsync(chatId, $"<code>Вы подлючены к {victimSystem.IP}\nПоздравляем!Вы пройшли игру, подключение к чужому ПК - это был флаг\nУспехов вам в жизни!</code>", ParseMode.Html);
                                             return true;
                                         }
                                     }
