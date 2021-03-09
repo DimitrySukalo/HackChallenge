@@ -1,5 +1,7 @@
 # HackChallenge
 This is a bot where you learn to decode chi messages to get into someone else's computer. 
+
+# Usage
 To use this bot on your own, you need to specify your token and the path to the database.
 
 # Commands
